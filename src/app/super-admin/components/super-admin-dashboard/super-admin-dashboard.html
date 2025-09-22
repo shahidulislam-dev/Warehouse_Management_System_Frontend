@@ -1,0 +1,229 @@
+<!-- super-admin-dashboard.component.html -->
+<div class="min-h-screen bg-gray-50">
+  <!-- Header -->
+  <header class="bg-gradient-to-r from-blue-600 to-blue-800 text-white shadow-lg fixed w-full z-50">
+    <div class="flex items-center justify-between p-4">
+      <div class="flex items-center space-x-4">
+        <button (click)="toggleSidenav()" class="p-2 rounded-lg hover:bg-blue-700 transition-colors">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </button>
+        <h1 class="text-xl font-bold">Warehouse Management System</h1>
+        <span class="bg-yellow-500 text-blue-900 px-2 py-1 rounded-full text-sm font-semibold">Super Admin</span>
+      </div>
+      
+      <div class="flex items-center space-x-4">
+  <div class="relative">
+    <!-- Profile button -->
+    <button (click)="toggleUserMenu()" 
+            class="flex items-center space-x-2 p-2 rounded-lg hover:bg-blue-700 transition-colors">
+      <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+      </svg>
+    </button>
+    
+    <!-- Dropdown menu -->
+    <div *ngIf="showUserMenu" 
+         class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl py-2 z-50">
+      <button (click)="logout()" 
+              class="flex items-center space-x-2 w-full px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+        </svg>
+        <span>Logout</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Click outside to close menu -->
+<div *ngIf="showUserMenu" (click)="closeUserMenu()" class="fixed inset-0 z-40"></div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <div class="flex pt-16">
+    <!-- Sidebar -->
+    <div [class]="isSidenavOpen ? 'translate-x-0' : '-translate-x-full'" 
+         class="fixed inset-y-0 left-0 z-40 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0">
+      <nav class="mt-8 px-4">
+        <ul class="space-y-2">
+          <li>
+            <a routerLink="/super-admin/dashboard" routerLinkActive="bg-blue-100 text-blue-600" 
+               class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 transition-colors group">
+              <svg class="w-6 h-6 text-gray-400 group-hover:text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+              </svg>
+              <span class="font-medium">Dashboard</span>
+            </a>
+          </li>
+          
+          <li>
+            <a routerLink="/super-admin/users" routerLinkActive="bg-blue-100 text-blue-600"
+               class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 transition-colors group">
+              <svg class="w-6 h-6 text-gray-400 group-hover:text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"/>
+              </svg>
+              <span class="font-medium">User Management</span>
+            </a>
+          </li>
+          
+          <li>
+            <a routerLink="/super-admin/warehouses" routerLinkActive="bg-blue-100 text-blue-600"
+               class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 transition-colors group">
+              <svg class="w-6 h-6 text-gray-400 group-hover:text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 8v-5m0 5h4"/>
+              </svg>
+              <span class="font-medium">Warehouses</span>
+            </a>
+          </li>
+          
+          <li>
+            <a routerLink="/super-admin/create-super-admin" routerLinkActive="bg-blue-100 text-blue-600"
+               class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 transition-colors group">
+              <svg class="w-6 h-6 text-gray-400 group-hover:text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+              </svg>
+              <span class="font-medium">Create Super Admin</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+
+    <!-- Overlay for mobile -->
+    <div *ngIf="isSidenavOpen" (click)="toggleSidenav()" 
+         class="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"></div>
+
+    <!-- Dashboard Content -->
+    <main class="flex-1 p-6 lg:p-8">
+      <div class="max-w-7xl mx-auto">
+        <h1 class="text-3xl font-bold text-gray-900 mb-8">Super Admin Dashboard</h1>
+        
+        <!-- Statistics Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <!-- Total Users Card -->
+          <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500 hover:shadow-xl transition-shadow">
+            <div class="flex items-center">
+              <div class="p-3 rounded-full bg-blue-100 text-blue-600 mr-4">
+                <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                </svg>
+              </div>
+              <div>
+                <p class="text-2xl font-bold text-gray-900">{{ userCount }}</p>
+                <p class="text-gray-600">Total Users</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Warehouses Card -->
+          <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500 hover:shadow-xl transition-shadow">
+            <div class="flex items-center">
+              <div class="p-3 rounded-full bg-green-100 text-green-600 mr-4">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 8v-5m0 5h4"/>
+                </svg>
+              </div>
+              <div>
+                <p class="text-2xl font-bold text-gray-900">{{ warehouseCount }}</p>
+                <p class="text-gray-600">Warehouses</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pending Approvals Card -->
+          <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-orange-500 hover:shadow-xl transition-shadow">
+            <div class="flex items-center">
+              <div class="p-3 rounded-full bg-orange-100 text-orange-600 mr-4">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+              </div>
+              <div>
+                <p class="text-2xl font-bold text-gray-900">{{ pendingApprovals }}</p>
+                <p class="text-gray-600">Pending Approvals</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Admin Role Card -->
+          <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-red-500 hover:shadow-xl transition-shadow">
+            <div class="flex items-center">
+              <div class="p-3 rounded-full bg-red-100 text-red-600 mr-4">
+                <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/>
+                </svg>
+              </div>
+              <div>
+                <p class="text-2xl font-bold text-gray-900">Super</p>
+                <p class="text-gray-600">Admin Role</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+          <h2 class="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <button routerLink="/super-admin/users" 
+                    class="flex flex-col items-center justify-center p-6 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors group">
+              <svg class="w-12 h-12 text-blue-600 mb-3 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"/>
+              </svg>
+              <span class="font-semibold text-gray-900">Manage Users</span>
+            </button>
+            
+            <button routerLink="/super-admin/warehouses"
+                    class="flex flex-col items-center justify-center p-6 bg-green-50 rounded-lg hover:bg-green-100 transition-colors group">
+              <svg class="w-12 h-12 text-green-600 mb-3 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 8v-5m0 5h4"/>
+              </svg>
+              <span class="font-semibold text-gray-900">Manage Warehouses</span>
+            </button>
+            
+            <button routerLink="/super-admin/create-super-admin"
+                    class="flex flex-col items-center justify-center p-6 bg-red-50 rounded-lg hover:bg-red-100 transition-colors group">
+              <svg class="w-12 h-12 text-red-600 mb-3 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+              </svg>
+              <span class="font-semibold text-gray-900">Add Super Admin</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+          <h2 class="text-xl font-semibold text-gray-900 mb-4">Recent Activity</h2>
+          <div class="space-y-4">
+            <div class="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg">
+              <div class="p-2 bg-blue-100 rounded-full">
+                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+                </svg>
+              </div>
+              <div>
+                <p class="font-medium text-gray-900">New user registration</p>
+                <p class="text-sm text-gray-600">2 minutes ago</p>
+              </div>
+            </div>
+            
+            <div class="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg">
+              <div class="p-2 bg-green-100 rounded-full">
+                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 8v-5m0 5h4"/>
+                </svg>
+              </div>
+              <div>
+                <p class="font-medium text-gray-900">Warehouse created</p>
+                <p class="text-sm text-gray-600">1 hour ago</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
