@@ -3,6 +3,7 @@ import { AuthService } from '../../../auth/services/auth-service';
 import { WarehouseService } from '../../../services/warehouse-service';
 import { UserService } from '../../../services/user-service';
 import { Router } from '@angular/router';
+import { Snackbar } from '../../../services/snackbar';
 
 @Component({
   selector: 'app-super-admin-dashboard',
@@ -11,7 +12,7 @@ import { Router } from '@angular/router';
   styleUrl: './super-admin-dashboard.css'
 })
 export class SuperAdminDashboard implements OnInit{
-userCount: number = 0;
+  userCount: number = 0;
   warehouseCount: number = 0;
   pendingApprovals: number = 0;
   isSidenavOpen = false;
@@ -21,6 +22,7 @@ userCount: number = 0;
     private authService: AuthService,
     private warehouseService: WarehouseService,
     private userService: UserService,
+    private snackbarService: Snackbar,
     private router: Router
   ) {}
 
@@ -28,7 +30,7 @@ userCount: number = 0;
     this.loadDashboardData();
   }
 
-  loadDashboardData(): void {
+   loadDashboardData(): void {
     this.isLoading = true;
     
     // Load users data
@@ -41,6 +43,7 @@ userCount: number = 0;
       error: (error) => {
         console.error('Error loading users:', error);
         this.isLoading = false;
+        this.snackbarService.openSnackBar('Error loading users data', 'error');
       }
     });
 
@@ -50,11 +53,11 @@ userCount: number = 0;
         this.warehouseCount = warehouses.length;
       },
       error: (error) => {
+        this.snackbarService.openSnackBar('Error loading warehouses data', 'error');
         console.error('Error loading warehouses:', error);
       }
     });
   }
-
   toggleSidenav(): void {
     this.isSidenavOpen = !this.isSidenavOpen;
   }

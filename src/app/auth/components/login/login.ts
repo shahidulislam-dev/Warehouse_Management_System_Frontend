@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { AuthService } from '../../services/auth-service';
 import { Router } from '@angular/router';
 import { FormGroup, FormControl } from '@angular/forms';
+import { Snackbar } from '../../../services/snackbar';
 
 @Component({
   selector: 'app-login',
@@ -15,7 +16,7 @@ export class Login {
     password: new FormControl('')
   });
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private authService: AuthService, private snackbarService: Snackbar,private router: Router) {}
 
   onLogin() {
     const data = this.loginForm.value;
@@ -33,7 +34,7 @@ export class Login {
         }
       },
       error: (err) => {
-        alert(err.error?.message || 'Invalid credentials');
+        this.snackbarService.openSnackBar('Error loading users data', 'error');
       }
     });
   }
@@ -48,7 +49,7 @@ export class Login {
       case 'super-admin':
         this.router.navigate(['/super-admin/dashboard']);
         break;
-      case 'staff': // Assuming 'staff' is the role for regular users
+      case 'staff': 
         this.router.navigate(['/user/dashboard']);
         break;
       default:

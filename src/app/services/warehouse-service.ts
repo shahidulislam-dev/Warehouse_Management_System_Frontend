@@ -14,7 +14,7 @@ export interface WarehouseRequest {
   providedIn: 'root'
 })
 export class WarehouseService {
- private apiUrl = 'http://localhost:8080/api/warehouse';
+  private apiUrl = 'http://localhost:8080/api/warehouse';
 
   constructor(
     private http: HttpClient,
@@ -28,14 +28,18 @@ export class WarehouseService {
     });
   }
 
-  // Get all warehouses
+  // Get all warehouses - FIXED: Added auth headers
   getAllWarehouses(): Observable<Warehouse[]> {
-    return this.http.get<Warehouse[]>(`${this.apiUrl}/get/all`);
+    return this.http.get<Warehouse[]>(`${this.apiUrl}/get/all`, {
+      headers: this.authService.getAuthHeaders()
+    });
   }
 
-  // Get warehouse by ID
+  // Get warehouse by ID - FIXED: Added auth headers
   getWarehouseById(id: number): Observable<Warehouse> {
-    return this.http.get<Warehouse>(`${this.apiUrl}/get/${id}`);
+    return this.http.get<Warehouse>(`${this.apiUrl}/get/${id}`, {
+      headers: this.authService.getAuthHeaders()
+    });
   }
 
   // Update warehouse
