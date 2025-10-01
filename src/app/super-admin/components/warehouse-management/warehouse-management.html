@@ -1,1 +1,145 @@
-<p>warehouse-management works!</p>
+<!-- Warehouse Management Html-->
+<div class="min-h-screen bg-gray-50 p-10 md:p-6 lg:p-8">
+  <div class="max-w-7xl mx-auto">
+    <!-- Header Section -->
+    <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        <div>
+          <h1 class="text-2xl md:text-3xl lg:text-4xl font-bold text-green-800 mb-2">
+            Warehouse Management
+          </h1>
+          <p class="text-gray-600 text-sm md:text-base">
+            Manage your warehouse inventory and locations
+          </p>
+        </div>
+        
+        <!-- Add Warehouse Button -->
+        <button 
+          *ngIf="isAdmin"
+          (click)="openAddWarehouseDialog()"
+          class="bg-green-600 hover:bg-green-700 text-white px-4 py-3 md:px-6 md:py-4 rounded-lg font-semibold text-sm md:text-base lg:text-lg shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2 w-full lg:w-auto">
+          <mat-icon class="text-xl">add</mat-icon>
+          <span>Add New Warehouse</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Warehouse Table Section -->
+    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+      <!-- Loading State -->
+      <div *ngIf="loading" class="p-8 text-center">
+        <div class="inline-flex items-center gap-3 text-gray-600">
+          <mat-spinner diameter="24"></mat-spinner>
+          <span class="text-lg">Loading warehouses...</span>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="!loading && dataSource.data.length === 0" class="p-8 text-center">
+        <mat-icon class="text-6xl text-gray-300 mb-4">inventory_2</mat-icon>
+        <h3 class="text-xl font-semibold text-gray-600 mb-2">No Warehouses Found</h3>
+        <p class="text-gray-500 mb-6">Get started by adding your first warehouse</p>
+        <button 
+          *ngIf="isAdmin"
+          (click)="openAddWarehouseDialog()"
+          class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold shadow-md hover:shadow-lg transition-all duration-200">
+          Add First Warehouse
+        </button>
+      </div>
+
+      <!-- Warehouse Table -->
+      <div *ngIf="!loading && dataSource.data.length > 0" class="overflow-x-auto">
+        <table mat-table [dataSource]="dataSource" class="w-full">
+          <!-- ID Column -->
+          <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef class="px-4 py-4 text-left font-bold text-gray-700 bg-gray-50 ">
+              <div class="flex items-center gap-1">
+                <mat-icon class="text-lg">tag</mat-icon>
+                <span class="hidden sm:inline">ID</span>
+              </div>
+            </th>
+            <td mat-cell *matCellDef="let warehouse" class="px-4 py-4 border-t">
+              <div class="font-mono text-sm text-gray-600">
+                {{ warehouse.id }}
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Name Column -->
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef class="px-4 py-4 text-left font-semibold text-gray-700 bg-gray-50">
+              <div class="flex items-center gap-1">
+                <mat-icon class="text-lg">business</mat-icon>
+                <span>Warehouse Name</span>
+              </div>
+            </th>
+            <td mat-cell *matCellDef="let warehouse" class="px-4 py-4 border-t">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                  <mat-icon class="text-green-600 text-lg">inventory_2</mat-icon>
+                </div>
+                <span class="font-medium text-gray-900">{{ warehouse.name }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef class="px-4 py-4 text-center font-semibold text-gray-700 bg-gray-50">
+              <div class="flex items-center gap-1 justify-center">
+                <mat-icon class="text-lg">settings</mat-icon>
+                <span class="hidden sm:inline">Actions</span>
+              </div>
+            </th>
+            <td mat-cell *matCellDef="let warehouse" class="px-4 py-4 border-t">
+              <div class="flex items-center justify-center gap-2">
+                <!-- Edit Button -->
+                <button 
+                  *ngIf="isAdmin"
+                  (click)="editWarehouse(warehouse)"
+                  mat-icon-button
+                  class="!bg-blue-50 !text-blue-600 hover:!bg-blue-100 transition-colors duration-200"
+                  matTooltip="Edit Warehouse">
+                  <mat-icon>edit</mat-icon>
+                </button>
+
+                <!-- Delete Button -->
+                <button 
+                  *ngIf="isAdmin"
+                  (click)="deleteWarehouse(warehouse)"
+                  mat-icon-button
+                  class="!bg-red-50 !text-red-600 hover:!bg-red-100 transition-colors duration-200"
+                  matTooltip="Delete Warehouse">
+                  <mat-icon>delete</mat-icon>
+                </button>
+
+                <!-- View Only State -->
+                <div *ngIf="!isAdmin" class="text-gray-400 text-sm">
+                  View Only
+                </div>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns" class="h-16"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;" 
+              class="hover:bg-gray-50 transition-colors duration-150 h-14"></tr>
+        </table>
+      </div>
+
+      <!-- Table Footer -->
+      <div *ngIf="!loading && dataSource.data.length > 0" 
+           class="px-4 py-3 bg-gray-50 border-t border-gray-200">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+          <p class="text-sm text-gray-600">
+            Showing <span class="font-semibold">{{ dataSource.data.length }}</span> 
+            warehouse{{ dataSource.data.length !== 1 ? 's' : '' }}
+          </p>
+          <div class="text-xs text-gray-500">
+            Last updated: {{ today | date:'medium' }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

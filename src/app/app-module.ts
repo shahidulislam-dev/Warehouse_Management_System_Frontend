@@ -7,6 +7,9 @@ import { AppRoutingModule } from './app-routing-module';
 import { MetarialModule } from './shared/metarial/metarial-module';
 import { CommonModule } from '@angular/common';
 import { AuthModule } from './auth/auth-module';
+import { SharedModule } from './shared/shared-module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ToastrModule } from 'ngx-toastr';
 
 @NgModule({
   declarations: [
@@ -19,7 +22,11 @@ import { AuthModule } from './auth/auth-module';
     MetarialModule,
     ReactiveFormsModule,
     CommonModule,
-    AuthModule
+    AuthModule,
+    SharedModule,
+    BrowserAnimationsModule, 
+    ToastrModule.forRoot(),
+    
   ],
   providers: [
     provideHttpClient(withInterceptorsFromDi())
