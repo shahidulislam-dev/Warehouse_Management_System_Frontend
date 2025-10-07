@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, tap, catchError } from 'rxjs';
 import { AuthService } from '../auth/services/auth-service';
+import { environment } from '../../environment/environment';
 
 export interface Warehouse {
   id: number;
@@ -16,7 +17,7 @@ export interface WarehouseRequest {
   providedIn: 'root'
 })
 export class WarehouseService {
-  private apiUrl = 'http://localhost:8080/api/warehouse';
+  private apiUrl = `${environment.baseUrl}/api/warehouse`;
 
   constructor(
     private http: HttpClient,

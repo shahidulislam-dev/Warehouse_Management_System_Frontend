@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { jwtDecode } from 'jwt-decode';
+import { environment } from '../../../environment/environment';
 
 interface DecodedToken {
   sub: string;
@@ -18,7 +19,7 @@ interface CurrentUser {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private apiUrl = 'http://localhost:8080/api/auth';
+  private apiUrl = `${environment.baseUrl}/api/auth`;
   private currentUserRole = new BehaviorSubject<string>('');
   private currentUserSubject = new BehaviorSubject<CurrentUser | null>(null);
 
