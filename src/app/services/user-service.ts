@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AuthService } from '../auth/services/auth-service';
 import { environment } from '../../environment/environment';
+
 export interface User {
   id: number;
   fullName: string;
@@ -36,6 +37,27 @@ export class UserService {
       id: userId.toString(),
       status: status
     }, {
+      headers: this.authService.getAuthHeaders()
+    });
+  }
+
+  // NEW METHOD: Update user role
+  updateUserRole(userId: number, role: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/update`, {
+      id: userId.toString(),
+      role: role
+    }, {
+      headers: this.authService.getAuthHeaders()
+    });
+  }
+
+  // NEW METHOD: Update both status and role
+  updateUser(userId: number, updates: { status?: string; role?: string }): Observable<any> {
+    const payload: any = { id: userId.toString() };
+    if (updates.status !== undefined) payload.status = updates.status;
+    if (updates.role !== undefined) payload.role = updates.role;
+    
+    return this.http.post(`${this.apiUrl}/update`, payload, {
       headers: this.authService.getAuthHeaders()
     });
   }

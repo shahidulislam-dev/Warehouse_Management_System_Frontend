@@ -1,8 +1,7 @@
-// components/goods-management/create-goods/create-goods.ts
 import { Component, Inject, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ToastrService } from 'ngx-toastr';
+import { GlobalToastrService } from '../../../../services/global-toastr-service';
 import { GoodsService, GoodsRequest, GoodsResponse } from '../../../../services/goods-service';
 import { Warehouse } from '../../../../services/warehouse-service';
 import { FloorsService, FloorWrapper } from '../../../../services/floors-service';
@@ -29,15 +28,6 @@ export class CreateGoods implements OnInit {
   floors: FloorWrapper[] = [];
   rooms: RoomsWrapper[] = [];
 
-  // Common units for selection
-  units: string[] = [
-    'Piece', 'Box', 'Packet', 'Bundle', 'Set',
-    'Kg', 'Gram', 'Pound', 'Ounce',
-    'Liter', 'Milliliter', 'Gallon',
-    'Meter', 'Centimeter', 'Foot', 'Inch',
-    'Carton', 'Pallet', 'Container'
-  ];
-
   constructor(
     public dialogRef: MatDialogRef<CreateGoods>,
     @Inject(MAT_DIALOG_DATA) public data: CreateGoodsData,
@@ -45,14 +35,14 @@ export class CreateGoods implements OnInit {
     private goodsService: GoodsService,
     private floorsService: FloorsService,
     private roomsService: RoomsService,
-    private toastr: ToastrService
+    private toastr: GlobalToastrService
   ) {
     this.isEdit = !!data.goods;
     
     this.goodsForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]],
       quantity: ['', [Validators.required, Validators.min(0), Validators.max(999999)]],
-      unit: ['', [Validators.required]],
+      // REMOVED: unit field - unit comes from category
       categoryId: ['', [Validators.required]],
       warehouseId: ['', [Validators.required]],
       floorId: ['', [Validators.required]],
@@ -62,10 +52,30 @@ export class CreateGoods implements OnInit {
 
   ngOnInit(): void {
     if (this.isEdit && this.data.goods) {
-      this.patchFormWithGoodsData();
+      this.initializeEditMode();
     }
 
-    // Load floors and rooms when warehouse changes
+    this.setupFormListeners();
+  }
+
+  private initializeEditMode(): void {
+    if (!this.data.goods) return;
+
+    this.goodsForm.patchValue({
+      name: this.data.goods.name,
+      quantity: this.data.goods.quantity,
+      categoryId: this.findCategoryIdByName(this.data.goods.categoryName)
+    });
+
+    // Find and set warehouse by name
+    const warehouse = this.data.warehouses.find(w => w.name === this.data.goods?.warehouseName);
+    if (warehouse) {
+      this.goodsForm.patchValue({ warehouseId: warehouse.id });
+      this.loadFloorsForEdit(warehouse.id);
+    }
+  }
+
+  private setupFormListeners(): void {
     this.goodsForm.get('warehouseId')?.valueChanges.subscribe(warehouseId => {
       if (warehouseId) {
         this.loadFloorsByWarehouse(warehouseId);
@@ -76,7 +86,6 @@ export class CreateGoods implements OnInit {
       }
     });
 
-    // Load rooms when floor changes
     this.goodsForm.get('floorId')?.valueChanges.subscribe(floorId => {
       const warehouseId = this.goodsForm.get('warehouseId')?.value;
       if (warehouseId && floorId) {
@@ -88,70 +97,74 @@ export class CreateGoods implements OnInit {
     });
   }
 
-  patchFormWithGoodsData(): void {
-    if (this.data.goods) {
-      // For edit mode, we'll populate the basic fields
-      // The location fields will be populated after we load the related data
-      this.goodsForm.patchValue({
-        name: this.data.goods.name,
-        quantity: this.data.goods.quantity,
-        unit: this.data.goods.unit,
-        categoryId: this.findCategoryIdByName(this.data.goods.categoryName)
-      });
-
-      // Note: For a complete edit implementation, you would need to:
-      // 1. Find the warehouse by name and set warehouseId
-      // 2. Load floors for that warehouse
-      // 3. Find the floor by name and set floorId
-      // 4. Load rooms for that floor
-      // 5. Find the room by name and set roomId
-      // This requires additional API calls and is more complex
-    }
-  }
-
-  findCategoryIdByName(categoryName: string): number {
-    const category = this.data.categories.find(c => c.name === categoryName);
-    return category ? category.id : 0;
-  }
-
-  loadFloorsByWarehouse(warehouseId: number): void {
+  private loadFloorsForEdit(warehouseId: number): void {
     this.floorsService.getFloorsByWarehouseId(warehouseId).subscribe({
       next: (floors) => {
         this.floors = floors;
-        // If editing and we have floor data, try to find and set the floor
-        if (this.isEdit && this.data.goods) {
-          const floor = this.floors.find(f => f.name === this.data.goods?.floorName);
-          if (floor) {
-            this.goodsForm.patchValue({ floorId: floor.id });
-          }
+        
+        // Find and set floor by name
+        const floor = this.floors.find(f => f.name === this.data.goods?.floorName);
+        if (floor) {
+          this.goodsForm.patchValue({ floorId: floor.id });
+          this.loadRoomsForEdit(warehouseId, floor.id);
         }
       },
       error: (error) => {
         console.error('Error loading floors:', error);
-        this.toastr.error('Failed to load floors', 'Error');
+        this.toastr.error('Failed to load floors');
         this.floors = [];
       }
     });
   }
 
-  loadRoomsByFloor(warehouseId: number, floorId: number): void {
+  private loadRoomsForEdit(warehouseId: number, floorId: number): void {
     this.roomsService.getRoomsByFloorAndWarehouse(floorId, warehouseId).subscribe({
       next: (rooms) => {
         this.rooms = rooms;
-        // If editing and we have room data, try to find and set the room
-        if (this.isEdit && this.data.goods) {
-          const room = this.rooms.find(r => r.name === this.data.goods?.roomName);
-          if (room) {
-            this.goodsForm.patchValue({ roomId: room.id });
-          }
+        
+        // Find and set room by name
+        const room = this.rooms.find(r => r.name === this.data.goods?.roomName);
+        if (room) {
+          this.goodsForm.patchValue({ roomId: room.id });
         }
       },
       error: (error) => {
         console.error('Error loading rooms:', error);
-        this.toastr.error('Failed to load rooms', 'Error');
+        this.toastr.error('Failed to load rooms');
         this.rooms = [];
       }
     });
+  }
+
+  private loadFloorsByWarehouse(warehouseId: number): void {
+    this.floorsService.getFloorsByWarehouseId(warehouseId).subscribe({
+      next: (floors) => {
+        this.floors = floors;
+      },
+      error: (error) => {
+        console.error('Error loading floors:', error);
+        this.toastr.error('Failed to load floors');
+        this.floors = [];
+      }
+    });
+  }
+
+  private loadRoomsByFloor(warehouseId: number, floorId: number): void {
+    this.roomsService.getRoomsByFloorAndWarehouse(floorId, warehouseId).subscribe({
+      next: (rooms) => {
+        this.rooms = rooms;
+      },
+      error: (error) => {
+        console.error('Error loading rooms:', error);
+        this.toastr.error('Failed to load rooms');
+        this.rooms = [];
+      }
+    });
+  }
+
+  private findCategoryIdByName(categoryName: string): number {
+    const category = this.data.categories.find(c => c.name === categoryName);
+    return category ? category.id : 0;
   }
 
   onSubmit(): void {
@@ -162,7 +175,6 @@ export class CreateGoods implements OnInit {
       const request: GoodsRequest = {
         name: formValue.name.trim(),
         quantity: formValue.quantity,
-        unit: formValue.unit,
         categoryId: formValue.categoryId,
         warehouseId: formValue.warehouseId,
         floorId: formValue.floorId,
@@ -175,10 +187,7 @@ export class CreateGoods implements OnInit {
 
       operation.subscribe({
         next: (response: string) => {
-          this.toastr.success(
-            `Goods ${this.isEdit ? 'updated' : 'created'} successfully!`,
-            'Success'
-          );
+          this.toastr.success(`Goods ${this.isEdit ? 'updated' : 'created'} successfully!`);
           this.loading = false;
           this.dialogRef.close(true);
         },
@@ -200,12 +209,12 @@ export class CreateGoods implements OnInit {
             errorMessage = this.isEdit ? 'Goods not found' : 'Required resource not found';
           }
           
-          this.toastr.error(errorMessage, 'Error');
+          this.toastr.error(errorMessage);
         }
       });
     } else {
       this.markFormGroupTouched();
-      this.toastr.error('Please fill all required fields correctly', 'Validation Error');
+      this.toastr.error('Please fill all required fields correctly');
     }
   }
 
@@ -220,7 +229,6 @@ export class CreateGoods implements OnInit {
     });
   }
 
-  // Helper method to check if field has error
   hasError(controlName: string, errorName: string): boolean {
     const control = this.goodsForm.get(controlName);
     return control ? control.hasError(errorName) && (control.dirty || control.touched) : false;

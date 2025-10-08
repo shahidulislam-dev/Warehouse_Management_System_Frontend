@@ -2,8 +2,7 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { Warehouse, WarehouseRequest, WarehouseService } from '../../../../services/warehouse-service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { ToastrService } from 'ngx-toastr';
-import { timeout } from 'rxjs';
+import { GlobalToastrService } from '../../../../services/global-toastr-service';
 
 @Component({
   selector: 'app-create-warehouse',
@@ -20,7 +19,7 @@ export class CreateWarehouse implements OnInit {
     private warehouseService: WarehouseService,
     public dialogRef: MatDialogRef<CreateWarehouse>,
     @Inject(MAT_DIALOG_DATA) public data: { warehouse: Warehouse },
-    private toastr: ToastrService
+    private toastr: GlobalToastrService 
   ) {
     this.isEdit = !!data?.warehouse;
     
@@ -43,37 +42,23 @@ export class CreateWarehouse implements OnInit {
       const request: WarehouseRequest = {
         name: this.warehouseForm.value.name.trim()
       };
-
-      console.log('Submitting warehouse form:', {
-        isEdit: this.isEdit,
-        warehouseId: this.isEdit ? this.data.warehouse.id : null,
-        request: request
-      });
-
+      
       const operation = this.isEdit 
         ? this.warehouseService.updateWarehouse(this.data.warehouse.id, request)
         : this.warehouseService.createWarehouse(request);
 
       operation.subscribe({
         next: (response: string) => {
-          console.log('Warehouse operation successful:', response);
           this.loading = false;
           
+          // Use global toastr service - much cleaner!
           this.toastr.success(
-            `Warehouse ${this.isEdit ? 'updated' : 'created'} successfully!`,
-            'Success', { 
-              timeOut: 3000,
-              positionClass: 'toast-top-center'
-            }
-
-
-
+            `Warehouse ${this.isEdit ? 'updated' : 'created'} successfully!`
           );
           
           this.dialogRef.close(true);
         },
         error: (error) => {
-          console.error('Error saving warehouse:', error);
           this.loading = false;
           
           let errorMessage = this.isEdit ? 'Error updating warehouse' : 'Error creating warehouse';
@@ -89,8 +74,9 @@ export class CreateWarehouse implements OnInit {
           } else if (error.status === 404) {
             errorMessage = 'Warehouse not found';
           }
-          
-          this.toastr.error(errorMessage, 'Error');
+
+          // Use global toastr service for errors
+          this.toastr.error(errorMessage);
         }
       });
     }

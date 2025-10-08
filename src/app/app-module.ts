@@ -25,7 +25,19 @@ import { ToastrModule } from 'ngx-toastr';
     AuthModule,
     SharedModule,
     BrowserAnimationsModule, 
-    ToastrModule.forRoot(),
+    ToastrModule.forRoot({
+      timeOut: 3000,
+      positionClass: 'toast-top-center',
+      preventDuplicates: true,
+      progressBar: true,
+      progressAnimation: 'decreasing',
+      closeButton: true,
+      tapToDismiss: true,
+      easeTime: 400,
+      maxOpened: 3,
+      autoDismiss: true,
+      newestOnTop: true,
+    })
     
   ],
   providers: [

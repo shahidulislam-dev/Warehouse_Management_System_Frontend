@@ -4,7 +4,7 @@ import { Warehouse, WarehouseService } from '../../../services/warehouse-service
 import { AuthService } from '../../../auth/services/auth-service';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
-import { ToastrService } from 'ngx-toastr';
+import { GlobalToastrService } from '../../../services/global-toastr-service';
 import { RoomsService, RoomsWrapper } from '../../../services/rooms-service';
 import { FloorsService, FloorWrapper } from '../../../services/floors-service';
 import { CreateRoom } from './create-room/create-room';
@@ -22,7 +22,6 @@ export class RoomsManagement implements OnInit {
   isAdmin = false;
   today: Date = new Date();
   
-  // Filtering
   warehouses: Warehouse[] = [];
   floors: FloorWrapper[] = [];
   selectedWarehouseId: number | null = null;
@@ -36,7 +35,7 @@ export class RoomsManagement implements OnInit {
     private warehouseService: WarehouseService,
     private floorsService: FloorsService,
     private authService: AuthService,
-    private toastr: ToastrService,
+    private toastr: GlobalToastrService,
     private route: ActivatedRoute,
     private router: Router
   ) {}
@@ -54,13 +53,11 @@ export class RoomsManagement implements OnInit {
     this.warehouseService.getAllWarehouses().subscribe({
       next: (warehouses) => {
         this.warehouses = warehouses;
-        // Now that warehouses are loaded, setup route listener
         this.setupRouteListener();
       },
       error: (error) => {
         console.error('Error loading warehouses:', error);
-        this.toastr.error('Failed to load warehouses', 'Error');
-        // Even if warehouses fail, still setup route listener
+        this.toastr.error('Failed to load warehouses');
         this.setupRouteListener();
       }
     });
@@ -70,8 +67,6 @@ export class RoomsManagement implements OnInit {
     this.route.params.subscribe(params => {
       const warehouseId = params['warehouseId'];
       const floorId = params['floorId'];
-
-      console.log('Route params:', params); // Debug log
 
       if (warehouseId && floorId) {
         this.loadRoomsByFloorAndUpdateRoute(parseInt(warehouseId), parseInt(floorId));
@@ -90,12 +85,11 @@ export class RoomsManagement implements OnInit {
       },
       error: (error) => {
         console.error('Error loading floors:', error);
-        this.toastr.error('Failed to load floors', 'Error');
+        this.toastr.error('Failed to load floors');
       }
     });
   }
 
-  // Navigation methods that update URL
   navigateToAllRooms(): void {
     this.router.navigate(['/super-admin/rooms/all']);
   }
@@ -108,7 +102,6 @@ export class RoomsManagement implements OnInit {
     this.router.navigate(['/super-admin/rooms/warehouse', warehouseId, 'floor', floorId]);
   }
 
-  // Load methods that update state based on route
   loadAllRoomsAndUpdateRoute(): void {
     this.loading = true;
     this.selectedWarehouseId = null;
@@ -117,18 +110,15 @@ export class RoomsManagement implements OnInit {
     this.selectedFloorName = 'All Floors';
     this.floors = [];
     
-    console.log('Loading all rooms'); // Debug log
-    
     this.roomsService.getAllRooms().subscribe({
       next: (rooms) => {
         this.dataSource.data = rooms;
         this.loading = false;
-        console.log('All rooms loaded, showing:', this.selectedWarehouseName); // Debug log
       },
       error: (error) => {
         console.error('Error loading all rooms:', error);
         this.loading = false;
-        this.toastr.error('Failed to load rooms', 'Error');
+        this.toastr.error('Failed to load rooms');
       }
     });
   }
@@ -142,21 +132,17 @@ export class RoomsManagement implements OnInit {
     const selectedWarehouse = this.warehouses.find(w => w.id === warehouseId);
     this.selectedWarehouseName = selectedWarehouse ? selectedWarehouse.name : `Warehouse ${warehouseId}`;
     
-    console.log('Loading rooms for warehouse:', warehouseId, 'Name:', this.selectedWarehouseName); // Debug log
-    
-    // Load floors for this warehouse
     this.loadFloorsByWarehouse(warehouseId);
     
     this.roomsService.getRoomsByWarehouseId(warehouseId).subscribe({
       next: (rooms) => {
         this.dataSource.data = rooms;
         this.loading = false;
-        console.log('Rooms by warehouse loaded, showing:', this.selectedWarehouseName); // Debug log
       },
       error: (error) => {
         console.error('Error loading rooms by warehouse:', error);
         this.loading = false;
-        this.toastr.error('Failed to load rooms', 'Error');
+        this.toastr.error('Failed to load rooms');
       }
     });
   }
@@ -172,26 +158,21 @@ export class RoomsManagement implements OnInit {
     this.selectedWarehouseName = selectedWarehouse ? selectedWarehouse.name : `Warehouse ${warehouseId}`;
     this.selectedFloorName = selectedFloor ? selectedFloor.name : `Floor ${floorId}`;
     
-    console.log('Loading rooms for floor:', floorId, 'Name:', this.selectedFloorName, 'in warehouse:', warehouseId, 'Name:', this.selectedWarehouseName); // Debug log
-    
-    // Load floors for this warehouse
     this.loadFloorsByWarehouse(warehouseId);
     
     this.roomsService.getRoomsByFloorAndWarehouse(floorId, warehouseId).subscribe({
       next: (rooms) => {
         this.dataSource.data = rooms;
         this.loading = false;
-        console.log('Rooms by floor loaded, showing:', this.selectedWarehouseName, '/', this.selectedFloorName); // Debug log
       },
       error: (error) => {
         console.error('Error loading rooms by floor:', error);
         this.loading = false;
-        this.toastr.error('Failed to load rooms', 'Error');
+        this.toastr.error('Failed to load rooms');
       }
     });
   }
 
-  // Button click handlers
   showAllRooms(): void {
     this.navigateToAllRooms();
   }
@@ -220,6 +201,7 @@ export class RoomsManagement implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
+        this.toastr.success('Room created successfully!');
         this.reloadBasedOnCurrentRoute();
       }
     });
@@ -240,6 +222,7 @@ export class RoomsManagement implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
+        this.toastr.success('Room updated successfully!');
         this.reloadBasedOnCurrentRoute();
       }
     });
@@ -249,7 +232,7 @@ export class RoomsManagement implements OnInit {
     if (confirm(`Are you sure you want to delete room "${room.name}"?`)) {
       this.roomsService.deleteRoom(room.id).subscribe({
         next: (response: string) => {
-          this.toastr.success('Room deleted successfully!', 'Success');
+          this.toastr.success('Room deleted successfully!');
           this.reloadBasedOnCurrentRoute();
         },
         error: (error) => {
@@ -268,7 +251,7 @@ export class RoomsManagement implements OnInit {
             errorMessage = 'Room not found';
           }
           
-          this.toastr.error(errorMessage, 'Error');
+          this.toastr.error(errorMessage);
         }
       });
     }

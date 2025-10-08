@@ -4,6 +4,8 @@ import { AuthService } from '../../../auth/services/auth-service';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
 import { CreateWarehouse } from './create-warehouse/create-warehouse';
+import { ConfirmDialog } from '../../../shared/confirm-dialog/confirm-dialog';
+import { GlobalToastrService } from '../../../services/global-toastr-service';
 
 @Component({
   selector: 'app-warehouse-management',
@@ -21,7 +23,8 @@ export class WarehouseManagement implements OnInit {
   constructor(
     private dialog: MatDialog,
     private warehouseService: WarehouseService,
-    private authService: AuthService
+    private authService: AuthService,
+    private toastr: GlobalToastrService 
   ) {}
 
   ngOnInit(): void {
@@ -31,22 +34,18 @@ export class WarehouseManagement implements OnInit {
 
   checkAdminRole(): void {
     this.isAdmin = this.authService.isAdmin() || this.authService.isSuperAdmin();
-    console.log('User is admin:', this.isAdmin);
-    console.log('User role:', this.authService.getCurrentUserRole());
   }
 
   loadWarehouses(): void {
     this.loading = true;
     this.warehouseService.getAllWarehouses().subscribe({
       next: (warehouses) => {
-        console.log('Warehouses loaded successfully:', warehouses);
         this.dataSource.data = warehouses;
         this.loading = false;
       },
       error: (error) => {
-        console.error('Error loading warehouses:', error);
         this.loading = false;
-        alert('Error loading warehouses. Please check console for details.');
+        this.toastr.error('Error loading warehouses. Please check console for details.');
       }
     });
   }
@@ -60,7 +59,6 @@ export class WarehouseManagement implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log('Add warehouse dialog closed with result:', result);
       if (result) {
         this.loadWarehouses();
       }
@@ -77,7 +75,6 @@ export class WarehouseManagement implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log('Edit warehouse dialog closed with result:', result);
       if (result) {
         this.loadWarehouses();
       }
@@ -85,33 +82,40 @@ export class WarehouseManagement implements OnInit {
   }
 
   deleteWarehouse(warehouse: Warehouse): void {
-    if (confirm(`Are you sure you want to delete warehouse "${warehouse.name}"?`)) {
-      console.log('Deleting warehouse:', warehouse);
-      this.warehouseService.deleteWarehouse(warehouse.id).subscribe({
-        next: (response: string) => {
-          console.log('Warehouse deleted successfully:', response);
-          this.loadWarehouses();
-        },
-        error: (error) => {
-          console.error('Error deleting warehouse:', error);
-          let errorMessage = 'Error deleting warehouse';
-          
-          // Handle string error responses from backend
-          if (typeof error.error === 'string') {
-            errorMessage = error.error;
-          } else if (error.error?.message) {
-            errorMessage = error.error.message;
-          } else if (error.status === 401) {
-            errorMessage = 'Unauthorized - Please check your permissions';
-          } else if (error.status === 403) {
-            errorMessage = 'Forbidden - You do not have permission to delete warehouses';
-          } else if (error.status === 404) {
-            errorMessage = 'Warehouse not found';
+    const dialogRef = this.dialog.open(ConfirmDialog, {
+      width: '400px',
+      data: {
+        title: 'Delete Warehouse',
+        message: `Are you sure you want to delete warehouse "${warehouse.name}"? This action cannot be undone.`
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.warehouseService.deleteWarehouse(warehouse.id).subscribe({
+          next: (response: string) => {
+            this.toastr.success('Warehouse deleted successfully!');
+            this.loadWarehouses();
+          },
+          error: (error) => {
+            let errorMessage = 'Error deleting warehouse';
+            
+            if (typeof error.error === 'string') {
+              errorMessage = error.error;
+            } else if (error.error?.message) {
+              errorMessage = error.error.message;
+            } else if (error.status === 401) {
+              errorMessage = 'Unauthorized - Please check your permissions';
+            } else if (error.status === 403) {
+              errorMessage = 'Forbidden - You do not have permission to delete warehouses';
+            } else if (error.status === 404) {
+              errorMessage = 'Warehouse not found';
+            }
+
+            this.toastr.error(errorMessage);
           }
-          
-          alert(errorMessage);
-        }
-      });
-    }
+        });
+      }
+    });
   }
 }

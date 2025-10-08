@@ -4,7 +4,7 @@ import { Warehouse, WarehouseService } from '../../../services/warehouse-service
 import { AuthService } from '../../../auth/services/auth-service';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
-import { ToastrService } from 'ngx-toastr';
+import { GlobalToastrService } from '../../../services/global-toastr-service'; // Import global service
 import { FloorsService, FloorWrapper } from '../../../services/floors-service';
 import { CreateFloor } from './create-floor/create-floor';
 
@@ -31,7 +31,7 @@ export class FloorManagement implements OnInit {
     private floorsService: FloorsService,
     private warehouseService: WarehouseService,
     private authService: AuthService,
-    private toastr: ToastrService,
+    private toastr: GlobalToastrService,
     private route: ActivatedRoute,
     private router: Router
   ) {}
@@ -49,13 +49,11 @@ export class FloorManagement implements OnInit {
     this.warehouseService.getAllWarehouses().subscribe({
       next: (warehouses) => {
         this.warehouses = warehouses;
-        // Now that warehouses are loaded, setup route listener
         this.setupRouteListener();
       },
       error: (error) => {
         console.error('Error loading warehouses:', error);
-        this.toastr.error('Failed to load warehouses', 'Error');
-        // Even if warehouses fail, still setup route listener
+        this.toastr.error('Failed to load warehouses'); 
         this.setupRouteListener();
       }
     });
@@ -65,7 +63,7 @@ export class FloorManagement implements OnInit {
     this.route.params.subscribe(params => {
       const warehouseId = params['warehouseId'];
 
-      console.log('Route params:', params); // Debug log
+      console.log('Route params:', params); 
 
       if (warehouseId) {
         this.loadFloorsByWarehouseAndUpdateRoute(parseInt(warehouseId));
@@ -90,18 +88,18 @@ export class FloorManagement implements OnInit {
     this.selectedWarehouseId = null;
     this.selectedWarehouseName = 'All Warehouses';
     
-    console.log('Loading all floors'); // Debug log
+    console.log('Loading all floors'); 
     
     this.floorsService.getAllFloors().subscribe({
       next: (floors) => {
         this.dataSource.data = floors;
         this.loading = false;
-        console.log('All floors loaded, showing:', this.selectedWarehouseName); // Debug log
+        console.log('All floors loaded, showing:', this.selectedWarehouseName); 
       },
       error: (error) => {
         console.error('Error loading all floors:', error);
         this.loading = false;
-        this.toastr.error('Failed to load floors', 'Error');
+        this.toastr.error('Failed to load floors'); 
       }
     });
   }
@@ -113,18 +111,18 @@ export class FloorManagement implements OnInit {
     const selectedWarehouse = this.warehouses.find(w => w.id === warehouseId);
     this.selectedWarehouseName = selectedWarehouse ? selectedWarehouse.name : `Warehouse ${warehouseId}`;
     
-    console.log('Loading floors for warehouse:', warehouseId, 'Name:', this.selectedWarehouseName); // Debug log
+    console.log('Loading floors for warehouse:', warehouseId, 'Name:', this.selectedWarehouseName); 
     
     this.floorsService.getFloorsByWarehouseId(warehouseId).subscribe({
       next: (floors) => {
         this.dataSource.data = floors;
         this.loading = false;
-        console.log('Floors by warehouse loaded, showing:', this.selectedWarehouseName); // Debug log
+        console.log('Floors by warehouse loaded, showing:', this.selectedWarehouseName); 
       },
       error: (error) => {
         console.error('Error loading floors by warehouse:', error);
         this.loading = false;
-        this.toastr.error('Failed to load floors', 'Error');
+        this.toastr.error('Failed to load floors'); 
       }
     });
   }
@@ -149,6 +147,7 @@ export class FloorManagement implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
+        this.toastr.success('Floor created successfully!');
         this.reloadBasedOnCurrentRoute();
       }
     });
@@ -168,6 +167,7 @@ export class FloorManagement implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
+        this.toastr.success('Floor updated successfully!'); 
         this.reloadBasedOnCurrentRoute();
       }
     });
@@ -178,7 +178,7 @@ export class FloorManagement implements OnInit {
       console.log('Deleting floor:', floor);
       this.floorsService.deleteFloor(floor.id).subscribe({
         next: (response: string) => {
-          this.toastr.success('Floor deleted successfully!', 'Success');
+          this.toastr.success('Floor deleted successfully!');
           this.reloadBasedOnCurrentRoute();
         },
         error: (error) => {
@@ -197,7 +197,7 @@ export class FloorManagement implements OnInit {
             errorMessage = 'Floor not found';
           }
           
-          this.toastr.error(errorMessage, 'Error');
+          this.toastr.error(errorMessage); 
         }
       });
     }

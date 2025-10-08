@@ -9,8 +9,8 @@ export interface GoodsWrapper {
   id: number;
   name: string;
   quantity: number;
-  unit: string;
   categoryName: string;
+  categoryUnit: string; 
   roomName: string;
   floorName: string;
   warehouseName: string;
@@ -23,8 +23,8 @@ export interface GoodsResponse {
   id: number;
   name: string;
   quantity: number;
-  unit: string;
   categoryName: string;
+  categoryUnit: string; 
   roomName: string;
   floorName: string;
   warehouseName: string;
@@ -34,7 +34,6 @@ export interface GoodsResponse {
 export interface GoodsRequest {
   name: string;
   quantity: number;
-  unit: string;
   categoryId: number;
   roomId: number;
   floorId: number;
@@ -44,6 +43,7 @@ export interface GoodsRequest {
 export interface GoodsCategory {
   id: number;
   name: string;
+  unit: string;
 }
 
 @Injectable({

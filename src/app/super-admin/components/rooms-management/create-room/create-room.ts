@@ -4,7 +4,7 @@ import { Warehouse } from '../../../../services/warehouse-service';
 import { FloorsService, FloorWrapper } from '../../../../services/floors-service';
 import { RoomRequest, RoomsService, RoomsWrapper } from '../../../../services/rooms-service';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { ToastrService } from 'ngx-toastr';
+import { GlobalToastrService } from '../../../../services/global-toastr-service';
 
 @Component({
   selector: 'app-create-room',
@@ -25,7 +25,7 @@ export class CreateRoom implements OnInit {
     private floorsService: FloorsService,
     public dialogRef: MatDialogRef<CreateRoom>,
     @Inject(MAT_DIALOG_DATA) public data: { room: RoomsWrapper, warehouses: Warehouse[], floors: FloorWrapper[] },
-    private toastr: ToastrService
+    private toastr: GlobalToastrService
   ) {
     this.isEdit = !!data?.room;
     this.warehouses = data.warehouses || [];
@@ -40,31 +40,73 @@ export class CreateRoom implements OnInit {
 
   ngOnInit(): void {
     if (this.isEdit && this.data.room) {
-      // For editing, we need to find the warehouse and floor IDs
-      const warehouse = this.warehouses.find(w => w.name === this.data.room.warehouseName);
-      const floor = this.floors.find(f => f.name === this.data.room.floorName);
-      
-      if (warehouse) {
-        this.onWarehouseChange(warehouse.id);
-      }
-      
-      this.roomForm.patchValue({
-        name: this.data.room.name,
-        warehouseId: warehouse?.id || '',
-        floorId: floor?.id || ''
-      });
+      this.initializeEditMode();
     }
   }
 
-  onWarehouseChange(warehouseId: number): void {
-    this.roomForm.get('floorId')?.setValue('');
+  private initializeEditMode(): void {
+    if (!this.data.room) return;
+
+    // Set the name field immediately
+    this.roomForm.patchValue({
+      name: this.data.room.name
+    });
+
+    // Find warehouse by name from the available warehouses
+    const warehouse = this.warehouses.find(w => w.name === this.data.room.warehouseName);
+    if (warehouse) {
+      // Set warehouse and load floors for this warehouse
+      this.roomForm.patchValue({ warehouseId: warehouse.id });
+      this.loadFloorsForEdit(warehouse.id);
+    } else {
+      this.toastr.error('Associated warehouse not found');
+    }
+  }
+
+  private loadFloorsForEdit(warehouseId: number): void {
     this.floorsService.getFloorsByWarehouseId(warehouseId).subscribe({
       next: (floors) => {
         this.floors = floors;
+        
+        // Find floor by name from the loaded floors
+        const floor = this.floors.find(f => f.name === this.data.room?.floorName);
+        if (floor) {
+          // Set the floor field
+          this.roomForm.patchValue({ floorId: floor.id });
+        } else {
+          this.toastr.error('Associated floor not found');
+        }
+      },
+      error: (error) => {
+        console.error('Error loading floors:', error);
+        this.toastr.error('Failed to load floors for selected warehouse');
+        this.floors = [];
+      }
+    });
+  }
+
+  onWarehouseChange(warehouseId: number): void {
+    // Only reset floorId if we're not in edit mode or if the warehouse actually changed
+    if (!this.isEdit || this.roomForm.get('warehouseId')?.value !== warehouseId) {
+      this.roomForm.get('floorId')?.setValue('');
+    }
+    
+    this.floorsService.getFloorsByWarehouseId(warehouseId).subscribe({
+      next: (floors) => {
+        this.floors = floors;
+        
+        // In edit mode, if we have a floor already selected, try to maintain it
+        if (this.isEdit && this.data.room) {
+          const floor = this.floors.find(f => f.name === this.data.room?.floorName);
+          if (floor) {
+            this.roomForm.patchValue({ floorId: floor.id });
+          }
+        }
       },
       error: (error) => {
         console.error('Error loading floors:', error);
         this.floors = [];
+        this.toastr.error('Failed to load floors for selected warehouse');
       }
     });
   }
@@ -83,14 +125,8 @@ export class CreateRoom implements OnInit {
 
       operation.subscribe({
         next: (response: string) => {
-          console.log('Room operation successful:', response);
           this.loading = false;
-          
-          this.toastr.success(
-            `Room ${this.isEdit ? 'updated' : 'created'} successfully!`,
-            'Success'
-          );
-          
+          this.toastr.success(`Room ${this.isEdit ? 'updated' : 'created'} successfully!`);
           this.dialogRef.close(true);
         },
         error: (error) => {
@@ -111,7 +147,7 @@ export class CreateRoom implements OnInit {
             errorMessage = 'Floor not found';
           }
           
-          this.toastr.error(errorMessage, 'Error');
+          this.toastr.error(errorMessage);
         }
       });
     }

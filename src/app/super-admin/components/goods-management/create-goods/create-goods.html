@@ -45,56 +45,32 @@
       </mat-form-field>
     </div>
 
-    <!-- Quantity and Unit in row -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <!-- Quantity -->
-      <div class="space-y-2">
-        <label for="quantity" class="block text-sm font-medium text-gray-700">
-          Quantity *
-        </label>
-        <mat-form-field appearance="outline" class="w-full" >
-          <input 
-            matInput 
-            type="number"
-            id="quantity"
-            formControlName="quantity"
-            placeholder="0"
-            min="0"
-            max="999999"
-            [class.error]="hasError('quantity', 'required') || hasError('quantity', 'min')">
-          
-          @if (hasError('quantity', 'required')) {
-            <mat-error>Quantity is required</mat-error>
-          }
-          @if (hasError('quantity', 'min')) {
-            <mat-error>Quantity must be 0 or more</mat-error>
-          }
-        </mat-form-field>
-      </div>
-
-      <!-- Unit -->
-      <div class="space-y-2">
-        <label for="unit" class="block text-sm font-medium text-gray-700">
-          Unit *
-        </label>
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-select formControlName="unit" id="unit" placeholder="Select Unit">
-            <mat-option value="">Select Unit</mat-option>
-            @for (unit of units; track unit) {
-              <mat-option [value]="unit">
-                {{ unit }}
-              </mat-option>
-            }
-          </mat-select>
-          
-          @if (hasError('unit', 'required')) {
-            <mat-error>Unit selection is required</mat-error>
-          }
-        </mat-form-field>
-      </div>
+    <!-- Quantity Only (Unit removed) -->
+    <div class="space-y-2">
+      <label for="quantity" class="block text-sm font-medium text-gray-700">
+        Quantity *
+      </label>
+      <mat-form-field appearance="outline" class="w-full">
+        <input 
+          matInput 
+          type="number"
+          id="quantity"
+          formControlName="quantity"
+          placeholder="0"
+          min="0"
+          max="999999"
+          [class.error]="hasError('quantity', 'required') || hasError('quantity', 'min')">
+        
+        @if (hasError('quantity', 'required')) {
+          <mat-error>Quantity is required</mat-error>
+        }
+        @if (hasError('quantity', 'min')) {
+          <mat-error>Quantity must be 0 or more</mat-error>
+        }
+      </mat-form-field>
     </div>
 
-    <!-- Category -->
+    <!-- Category (now includes unit) -->
     <div class="space-y-2">
       <label for="categoryId" class="block text-sm font-medium text-gray-700">
         Category *
@@ -104,7 +80,7 @@
           <mat-option value="">Select Category</mat-option>
           @for (category of data.categories; track category.id) {
             <mat-option [value]="category.id">
-              {{ category.name }}
+              {{ category.name }} ({{ category.unit }}) <!-- Show unit in dropdown -->
             </mat-option>
           }
         </mat-select>
@@ -113,9 +89,12 @@
           <mat-error>Category selection is required</mat-error>
         }
       </mat-form-field>
+      <p class="text-sm text-gray-500 mt-1">
+        Unit will be automatically set from the selected category
+      </p>
     </div>
 
-    <!-- Location Section -->
+    <!-- Location Section (remains the same) -->
     <div class="border-t border-gray-200 pt-6">
       <h3 class="text-lg font-semibold text-gray-700 mb-4">Location Details</h3>
       
@@ -201,7 +180,7 @@
   </form>
 </div>
 
-<!-- Action Buttons -->
+<!-- Action Buttons (remains the same) -->
 <div class="px-6 py-4 border-t border-gray-200 bg-gray-50">
   <div class="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-3 w-full gap-3">
     <button

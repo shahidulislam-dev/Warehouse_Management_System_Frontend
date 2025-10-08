@@ -2,8 +2,24 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../environment/environment';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../auth/services/auth-service';
-import { GoodsCategory } from './goods-service';
 import { Observable } from 'rxjs';
+
+export interface GoodsCategoryRequest {
+  name: string;
+  unit: string; // Added unit field
+}
+
+export interface GoodsCategoryResponse {
+  id: number;
+  name: string;
+  unit: string; // Added unit field
+}
+
+export interface GoodsCategoryWrapper {
+  id: number;
+  name: string;
+  unit: string; 
+}
 
 @Injectable({
   providedIn: 'root'
@@ -16,33 +32,36 @@ export class CategoryService {
     private authService: AuthService 
   ) {}
 
-  getAllCategories(): Observable<GoodsCategory[]> {
-    return this.http.get<GoodsCategory[]>(`${this.apiUrl}/all`, {
+  getAllCategories(): Observable<GoodsCategoryWrapper[]> {
+    return this.http.get<GoodsCategoryWrapper[]>(`${this.apiUrl}/all`, {
       headers: this.authService.getAuthHeaders()
     });
   }
 
-  getCategoryById(id: number): Observable<GoodsCategory> {
-    return this.http.get<GoodsCategory>(`${this.apiUrl}/${id}`, {
+  getCategoryById(id: number): Observable<GoodsCategoryResponse> {
+    return this.http.get<GoodsCategoryResponse>(`${this.apiUrl}/${id}`, {
       headers: this.authService.getAuthHeaders()
     });
   }
 
-  createCategory(name: string): Observable<string> {
-    return this.http.post<string>(`${this.apiUrl}/create`, { name }, {
-      headers: this.authService.getAuthHeaders()
+  createCategory(request: GoodsCategoryRequest): Observable<any> {
+    return this.http.post(`${this.apiUrl}/create`, request, {
+      headers: this.authService.getAuthHeaders(),
+      responseType: 'text' // FIX: Expect text response
     });
   }
 
-  updateCategory(id: number, name: string): Observable<string> {
-    return this.http.put<string>(`${this.apiUrl}/update/${id}`, { name }, {
-      headers: this.authService.getAuthHeaders()
+  updateCategory(id: number, request: GoodsCategoryRequest): Observable<any> {
+    return this.http.put(`${this.apiUrl}/update/${id}`, request, {
+      headers: this.authService.getAuthHeaders(),
+      responseType: 'text' // FIX: Expect text response
     });
   }
 
-  deleteCategory(id: number): Observable<string> {
-    return this.http.delete<string>(`${this.apiUrl}/delete/${id}`, {
-      headers: this.authService.getAuthHeaders()
+  deleteCategory(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/delete/${id}`, {
+      headers: this.authService.getAuthHeaders(),
+      responseType: 'text' // FIX: Expect text response
     });
   }
 }

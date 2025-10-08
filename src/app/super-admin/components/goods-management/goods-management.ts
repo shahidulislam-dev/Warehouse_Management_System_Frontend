@@ -1,11 +1,10 @@
-// components/goods-management/goods-management.ts
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Warehouse, WarehouseService } from '../../../services/warehouse-service';
 import { AuthService } from '../../../auth/services/auth-service';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
-import { ToastrService } from 'ngx-toastr';
+import { GlobalToastrService } from '../../../services/global-toastr-service';
 import { FloorsService, FloorWrapper } from '../../../services/floors-service';
 import { RoomsService, RoomsWrapper } from '../../../services/rooms-service';
 import { GoodsService, GoodsWrapper, GoodsCategory } from '../../../services/goods-service';
@@ -19,13 +18,25 @@ import { CategoryService } from '../../../services/category-service';
   styleUrl: './goods-management.css'
 })
 export class GoodsManagement implements OnInit {
-  displayedColumns: string[] = ['id', 'name', 'quantity', 'unit', 'categoryName', 'roomName', 'floorName', 'warehouseName', 'createdBy', 'actions'];
+ displayedColumns: string[] = [
+    'id', 
+    'name', 
+    'quantity', 
+    'categoryUnit', 
+    'categoryName', 
+    'roomName', 
+    'floorName', 
+    'warehouseName', 
+    'createdBy',
+    'createDate',   
+    'updateDate',    
+    'actions'
+  ];
   dataSource = new MatTableDataSource<GoodsWrapper>();
   loading = false;
   isAdmin = false;
   today: Date = new Date();
 
-  // Filtering
   warehouses: Warehouse[] = [];
   floors: FloorWrapper[] = [];
   rooms: RoomsWrapper[] = [];
@@ -47,7 +58,7 @@ export class GoodsManagement implements OnInit {
     private floorsService: FloorsService,
     private roomsService: RoomsService,
     private authService: AuthService,
-    private toastr: ToastrService,
+    private toastr: GlobalToastrService,
     private route: ActivatedRoute,
     private router: Router
   ) { }
@@ -70,7 +81,7 @@ export class GoodsManagement implements OnInit {
       },
       error: (error) => {
         console.error('Error loading warehouses:', error);
-        this.toastr.error('Failed to load warehouses', 'Error');
+        this.toastr.error('Failed to load warehouses');
         this.setupRouteListener();
       }
     });
@@ -83,7 +94,7 @@ export class GoodsManagement implements OnInit {
       },
       error: (error) => {
         console.error('Error loading categories:', error);
-        this.toastr.error('Failed to load categories', 'Error');
+        this.toastr.error('Failed to load categories');
       }
     });
   }
@@ -94,11 +105,7 @@ export class GoodsManagement implements OnInit {
       const floorId = params['floorId'];
       const roomId = params['roomId'];
 
-      console.log('Route params:', params);
-
-      // Reset selections based on route
       if (!warehouseId) {
-        // No warehouse selected - show all goods
         this.selectedWarehouseId = null;
         this.selectedFloorId = null;
         this.selectedRoomId = null;
@@ -107,7 +114,6 @@ export class GoodsManagement implements OnInit {
         this.updateSelectionNames();
         this.loadAllGoodsAndUpdateRoute();
       } else if (warehouseId && !floorId) {
-        // Only warehouse selected
         this.selectedWarehouseId = parseInt(warehouseId);
         this.selectedFloorId = null;
         this.selectedRoomId = null;
@@ -116,7 +122,6 @@ export class GoodsManagement implements OnInit {
         this.loadFloorsByWarehouse(this.selectedWarehouseId);
         this.loadGoodsByWarehouseAndUpdateRoute(this.selectedWarehouseId);
       } else if (warehouseId && floorId && !roomId) {
-        // Warehouse and floor selected
         this.selectedWarehouseId = parseInt(warehouseId);
         this.selectedFloorId = parseInt(floorId);
         this.selectedRoomId = null;
@@ -125,7 +130,6 @@ export class GoodsManagement implements OnInit {
         this.loadRoomsByFloor(this.selectedWarehouseId, this.selectedFloorId);
         this.loadGoodsByFloorAndUpdateRoute(this.selectedWarehouseId, this.selectedFloorId);
       } else if (warehouseId && floorId && roomId) {
-        // All three selected
         this.selectedWarehouseId = parseInt(warehouseId);
         this.selectedFloorId = parseInt(floorId);
         this.selectedRoomId = parseInt(roomId);
@@ -138,7 +142,6 @@ export class GoodsManagement implements OnInit {
   }
 
   updateSelectionNames(): void {
-    // Update warehouse name
     if (this.selectedWarehouseId) {
       const warehouse = this.warehouses.find(w => w.id === this.selectedWarehouseId);
       this.selectedWarehouseName = warehouse ? warehouse.name : `Warehouse ${this.selectedWarehouseId}`;
@@ -146,7 +149,6 @@ export class GoodsManagement implements OnInit {
       this.selectedWarehouseName = 'All Warehouses';
     }
 
-    // Update floor name
     if (this.selectedFloorId) {
       const floor = this.floors.find(f => f.id === this.selectedFloorId);
       this.selectedFloorName = floor ? floor.name : `Floor ${this.selectedFloorId}`;
@@ -154,7 +156,6 @@ export class GoodsManagement implements OnInit {
       this.selectedFloorName = 'All Floors';
     }
 
-    // Update room name
     if (this.selectedRoomId) {
       const room = this.rooms.find(r => r.id === this.selectedRoomId);
       this.selectedRoomName = room ? room.name : `Room ${this.selectedRoomId}`;
@@ -171,7 +172,7 @@ export class GoodsManagement implements OnInit {
       },
       error: (error) => {
         console.error('Error loading floors:', error);
-        this.toastr.error('Failed to load floors', 'Error');
+        this.toastr.error('Failed to load floors');
         this.floors = [];
       }
     });
@@ -185,13 +186,12 @@ export class GoodsManagement implements OnInit {
       },
       error: (error) => {
         console.error('Error loading rooms:', error);
-        this.toastr.error('Failed to load rooms', 'Error');
+        this.toastr.error('Failed to load rooms');
         this.rooms = [];
       }
     });
   }
 
-  // Navigation methods that update URL
   navigateToAllGoods(): void {
     this.router.navigate(['/super-admin/goods/all']);
   }
@@ -208,80 +208,66 @@ export class GoodsManagement implements OnInit {
     this.router.navigate(['/super-admin/goods/warehouse', warehouseId, 'floor', floorId, 'room', roomId]);
   }
 
-  // Load methods that update state based on route
   loadAllGoodsAndUpdateRoute(): void {
     this.loading = true;
-    console.log('Loading all goods');
-
     this.goodsService.getAllGoods().subscribe({
       next: (goods) => {
         this.dataSource.data = goods;
         this.loading = false;
-        console.log('All goods loaded');
       },
       error: (error) => {
         console.error('Error loading all goods:', error);
         this.loading = false;
-        this.toastr.error('Failed to load goods', 'Error');
+        this.toastr.error('Failed to load goods');
       }
     });
   }
 
   loadGoodsByWarehouseAndUpdateRoute(warehouseId: number): void {
     this.loading = true;
-    console.log('Loading goods for warehouse:', warehouseId);
-
     this.goodsService.getGoodsByWarehouse(warehouseId).subscribe({
       next: (goods) => {
         this.dataSource.data = goods;
         this.loading = false;
-        console.log('Goods by warehouse loaded');
       },
       error: (error) => {
         console.error('Error loading goods by warehouse:', error);
         this.loading = false;
-        this.toastr.error('Failed to load goods', 'Error');
+        this.toastr.error('Failed to load goods');
       }
     });
   }
 
   loadGoodsByFloorAndUpdateRoute(warehouseId: number, floorId: number): void {
     this.loading = true;
-    console.log('Loading goods for floor:', floorId, 'in warehouse:', warehouseId);
-
     this.goodsService.getGoodsByFloor(floorId).subscribe({
       next: (goods) => {
         this.dataSource.data = goods;
         this.loading = false;
-        console.log('Goods by floor loaded');
       },
       error: (error) => {
         console.error('Error loading goods by floor:', error);
         this.loading = false;
-        this.toastr.error('Failed to load goods', 'Error');
+        this.toastr.error('Failed to load goods');
       }
     });
   }
 
   loadGoodsByRoomAndUpdateRoute(warehouseId: number, floorId: number, roomId: number): void {
     this.loading = true;
-    console.log('Loading goods for room:', roomId, 'in floor:', floorId, 'warehouse:', warehouseId);
-
     this.goodsService.getGoodsByRoom(roomId).subscribe({
       next: (goods) => {
         this.dataSource.data = goods;
         this.loading = false;
-        console.log('Goods by room loaded');
       },
       error: (error) => {
         console.error('Error loading goods by room:', error);
         this.loading = false;
-        this.toastr.error('Failed to load goods', 'Error');
+        this.toastr.error('Failed to load goods');
       }
     });
   }
 
-  // Button click handlers
   showAllGoods(): void {
     this.navigateToAllGoods();
   }
@@ -316,6 +302,7 @@ export class GoodsManagement implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
+        this.toastr.success('Goods created successfully!');
         this.reloadBasedOnCurrentRoute();
       }
     });
@@ -338,13 +325,14 @@ export class GoodsManagement implements OnInit {
 
         dialogRef.afterClosed().subscribe(result => {
           if (result) {
+            this.toastr.success('Goods updated successfully!');
             this.reloadBasedOnCurrentRoute();
           }
         });
       },
       error: (error) => {
         console.error('Error loading goods details:', error);
-        this.toastr.error('Failed to load goods details', 'Error');
+        this.toastr.error('Failed to load goods details');
       }
     });
   }
@@ -353,7 +341,7 @@ export class GoodsManagement implements OnInit {
     if (confirm(`Are you sure you want to delete "${goods.name}"?`)) {
       this.goodsService.deleteGoods(goods.id).subscribe({
         next: (response: string) => {
-          this.toastr.success('Goods deleted successfully!', 'Success');
+          this.toastr.success('Goods deleted successfully!');
           this.reloadBasedOnCurrentRoute();
         },
         error: (error) => {
@@ -372,7 +360,7 @@ export class GoodsManagement implements OnInit {
             errorMessage = 'Goods not found';
           }
 
-          this.toastr.error(errorMessage, 'Error');
+          this.toastr.error(errorMessage);
         }
       });
     }

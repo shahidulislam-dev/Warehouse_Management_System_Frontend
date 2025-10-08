@@ -6,6 +6,8 @@ import { WarehouseManagement } from './components/warehouse-management/warehouse
 import { FloorManagement } from './components/floor-management/floor-management';
 import { RoomsManagement } from './components/rooms-management/rooms-management';
 import { GoodsManagement } from './components/goods-management/goods-management';
+import { CategoryManagement } from './components/category-management/category-management';
+import { UserManagement } from './components/user-management/user-management';
 
 const routes: Routes = [
    {
@@ -14,6 +16,7 @@ const routes: Routes = [
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: SuperAdminDashboard },
+      { path: 'users', component: UserManagement },
       { path: 'warehouses', component: WarehouseManagement },
        // Flat routes for floors
       { path: 'floors', redirectTo: 'floors/all', pathMatch: 'full' },
@@ -24,6 +27,7 @@ const routes: Routes = [
       { path: 'rooms/all', component: RoomsManagement },
       { path: 'rooms/warehouse/:warehouseId', component: RoomsManagement },
       { path: 'rooms/warehouse/:warehouseId/floor/:floorId', component: RoomsManagement },
+      { path: 'goods-category', component: CategoryManagement },
        // Flat routes for goods - FIXED ROUTING
       { path: 'goods', redirectTo: 'goods/all', pathMatch: 'full' },
       { path: 'goods/all', component: GoodsManagement },

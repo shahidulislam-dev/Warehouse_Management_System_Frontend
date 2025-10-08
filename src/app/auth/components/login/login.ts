@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { AuthService } from '../../services/auth-service';
 import { Router } from '@angular/router';
 import { FormGroup, FormControl } from '@angular/forms';
-import { Snackbar } from '../../../services/snackbar';
 
 @Component({
   selector: 'app-login',
@@ -16,7 +15,7 @@ export class Login {
     password: new FormControl('')
   });
 
-  constructor(private authService: AuthService, private snackbarService: Snackbar,private router: Router) {}
+  constructor(private authService: AuthService, private router: Router) {}
 
   onLogin() {
     const data = this.loginForm.value;
@@ -34,7 +33,7 @@ export class Login {
         }
       },
       error: (err) => {
-        this.snackbarService.openSnackBar('Error loading users data', 'error');
+        
       }
     });
   }

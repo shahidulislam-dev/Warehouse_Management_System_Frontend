@@ -6,6 +6,7 @@ import { Header } from './layout/header/header';
 import { Sidebar } from './layout/sidebar/sidebar';
 import { Content } from './layout/content/content';
 import { RouterModule } from '@angular/router';
+import { ConfirmDialog } from './confirm-dialog/confirm-dialog';
 
 
 
@@ -14,7 +15,8 @@ import { RouterModule } from '@angular/router';
     Layout,
     Header,
     Sidebar,
-    Content
+    Content,
+    ConfirmDialog
   ],
   imports: [
     CommonModule,

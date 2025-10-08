@@ -2,8 +2,9 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { Warehouse, WarehouseService } from '../../../../services/warehouse-service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { ToastrService } from 'ngx-toastr';
+import { GlobalToastrService } from '../../../../services/global-toastr-service'; // Import global service
 import { FloorRequest, FloorsService, FloorWrapper } from '../../../../services/floors-service';
+
 @Component({
   selector: 'app-create-floor',
   standalone: false,
@@ -21,7 +22,7 @@ export class CreateFloor implements OnInit {
     private floorsService: FloorsService,
     public dialogRef: MatDialogRef<CreateFloor>,
     @Inject(MAT_DIALOG_DATA) public data: { floor: FloorWrapper, warehouses: Warehouse[] },
-    private toastr: ToastrService
+    private toastr: GlobalToastrService 
   ) {
     this.isEdit = !!data?.floor;
     this.warehouses = data.warehouses || [];
@@ -66,10 +67,7 @@ export class CreateFloor implements OnInit {
           console.log('Floor operation successful:', response);
           this.loading = false;
           
-          this.toastr.success(
-            `Floor ${this.isEdit ? 'updated' : 'created'} successfully!`,
-            'Success'
-          );
+          this.toastr.success(`Floor ${this.isEdit ? 'updated' : 'created'} successfully!`); 
           
           this.dialogRef.close(true);
         },
@@ -91,7 +89,7 @@ export class CreateFloor implements OnInit {
             errorMessage = 'Warehouse not found';
           }
           
-          this.toastr.error(errorMessage, 'Error');
+          this.toastr.error(errorMessage); 
         }
       });
     }
