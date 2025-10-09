@@ -1,0 +1,217 @@
+<!-- shared/components/user-management/user-management.html -->
+<div class="bg-gray-50 p-4 md:p-6 lg:p-8">
+  <div class="max-w-7xl mx-auto">
+    <!-- Header Section -->
+    <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        <div>
+          <h1 class="text-2xl md:text-3xl lg:text-4xl font-bold text-green-800 mb-2">
+            User Management
+          </h1>
+          <p class="text-gray-600 text-sm md:text-base">
+            Manage users and their roles across the system
+          </p>
+        </div>
+        
+        <!-- Action Buttons -->
+        @if (authService.canManageUsers()) {
+          <div class="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
+            <button (click)="openCreateUserDialog()" 
+                    class="bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg font-semibold text-sm md:text-base shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2">
+              <mat-icon class="text-xl">person_add</mat-icon>
+              <span>Add Staff</span>
+            </button>
+            
+            @if (authService.canManageSuperAdmins()) {
+              <button (click)="openCreateSuperAdminDialog()" 
+                      class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-3 rounded-lg font-semibold text-sm md:text-base shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2">
+                <mat-icon class="text-xl">admin_panel_settings</mat-icon>
+                <span>Add Super Admin</span>
+              </button>
+            }
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- User Table Section (Only show if user has permission) -->
+    @if (authService.canManageUsers()) {
+      <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+        <!-- Loading State -->
+        @if (loading) {
+          <div class="p-8 text-center">
+            <div class="inline-flex items-center gap-3 text-gray-600">
+              <mat-spinner diameter="24"></mat-spinner>
+              <span class="text-lg">Loading users...</span>
+            </div>
+          </div>
+        }
+
+        <!-- Empty State -->
+        @if (!loading && dataSource.data.length === 0) {
+          <div class="p-8 text-center">
+            <mat-icon class="text-6xl text-gray-300 mb-4">people</mat-icon>
+            <h3 class="text-xl font-semibold text-gray-600 mb-2">No Users Found</h3>
+            <p class="text-gray-500 mb-6">No users have been registered yet</p>
+            <button (click)="openCreateUserDialog()" 
+                    class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold shadow-md hover:shadow-lg transition-all duration-200">
+              Add First User
+            </button>
+          </div>
+        }
+
+        <!-- User Table -->
+        @if (!loading && dataSource.data.length > 0) {
+          <div class="overflow-x-auto">
+            <table mat-table [dataSource]="dataSource" class="w-full">
+              
+              <!-- ID Column -->
+              <ng-container matColumnDef="id">
+                <th mat-header-cell *matHeaderCellDef class="px-4 py-4 text-left font-semibold text-gray-700 bg-gray-50">
+                  <div class="flex items-center gap-1">
+                    <mat-icon class="text-lg">tag</mat-icon>
+                    <span class="hidden sm:inline">ID</span>
+                  </div>
+                </th>
+                <td mat-cell *matCellDef="let user" class="px-4 py-4 border-t">
+                  <div class="font-medium text-sm lg:text-base text-gray-600">
+                    {{ user.id }}
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Full Name Column -->
+              <ng-container matColumnDef="fullName">
+                <th mat-header-cell *matHeaderCellDef class="px-4 py-4 text-left font-semibold text-gray-700 bg-gray-50">
+                  <div class="flex items-center gap-1">
+                    <mat-icon class="text-lg">person</mat-icon>
+                    <span>Full Name</span>
+                  </div>
+                </th>
+                <td mat-cell *matCellDef="let user" class="px-4 py-4 border-t">
+                  <div class="flex items-center gap-3">
+                    <span class="font-medium text-gray-900 text-sm lg:text-base">{{ user.fullName }}</span>
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Email Column -->
+              <ng-container matColumnDef="email">
+                <th mat-header-cell *matHeaderCellDef class="px-4 py-4 text-left font-semibold text-gray-700 bg-gray-50">
+                  <div class="flex items-center gap-1">
+                    <mat-icon class="text-lg">email</mat-icon>
+                    <span>Email</span>
+                  </div>
+                </th>
+                <td mat-cell *matCellDef="let user" class="px-4 py-4 border-t">
+                  <div class="text-gray-600 text-sm lg:text-base truncate max-w-[200px]" [title]="user.email">
+                    {{ user.email }}
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Contact Number Column -->
+              <ng-container matColumnDef="contactNumber">
+                <th mat-header-cell *matHeaderCellDef class="px-4 py-4 text-left font-semibold text-gray-700 bg-gray-50">
+                  <div class="flex items-center gap-1">
+                    <mat-icon class="text-lg">phone</mat-icon>
+                    <span>Contact</span>
+                  </div>
+                </th>
+                <td mat-cell *matCellDef="let user" class="px-4 py-4 border-t">
+                  <div class="text-gray-600 text-sm lg:text-base">{{ user.contactNumber }}</div>
+                </td>
+              </ng-container>
+
+              <!-- Role Column -->
+              <ng-container matColumnDef="role">
+                <th mat-header-cell *matHeaderCellDef class="px-4 py-4 text-left font-semibold text-gray-700 bg-gray-50">
+                  <div class="flex items-center gap-1">
+                    <mat-icon class="text-lg">badge</mat-icon>
+                    <span>Role</span>
+                  </div>
+                </th>
+                <td mat-cell *matCellDef="let user" class="px-4 py-4 border-t">
+                  <span [class]="getRoleBadgeClass(user.role)" 
+                        class="px-3 py-1 rounded-full text-xs font-medium capitalize">
+                    {{ user.role }}
+                  </span>
+                </td>
+              </ng-container>
+
+              <!-- Status Column -->
+              <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef class="px-4 py-4 text-left font-semibold text-gray-700 bg-gray-50">
+                  <div class="flex items-center gap-1">
+                    <mat-icon class="text-lg">circle</mat-icon>
+                    <span>Status</span>
+                  </div>
+                </th>
+                <td mat-cell *matCellDef="let user" class="px-4 py-4 border-t">
+                  <span [class]="getStatusBadgeClass(user.status)" 
+                        class="px-3 py-1 rounded-full text-xs font-medium capitalize">
+                    {{ user.status === 'true' ? 'Active' : 'Inactive' }}
+                  </span>
+                </td>
+              </ng-container>
+
+              <!-- Actions Column -->
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef class="px-4 py-4 text-center font-semibold text-gray-700 bg-gray-50">
+                  <div class="flex items-center gap-1 justify-center">
+                    <mat-icon class="text-lg">settings</mat-icon>
+                    <span class="hidden sm:inline">Actions</span>
+                  </div>
+                </th>
+                <td mat-cell *matCellDef="let user" class="px-4 py-4 border-t">
+                  <div class="flex items-center justify-center gap-2">
+                    <!-- Change Role Button -->
+                    @if (canEditUser(user)) {
+                      <button (click)="changeUserRole(user)" 
+                              mat-icon-button 
+                              class="!bg-blue-50 !text-blue-600 hover:!bg-blue-100 transition-colors duration-200 rounded-lg" 
+                              matTooltip="Change Role"
+                              matTooltipPosition="above">
+                        <mat-icon class="text-lg">admin_panel_settings</mat-icon>
+                      </button>
+                    }
+                    
+                    <!-- Toggle Status Button -->
+                    @if (canEditUser(user)) {
+                      <button (click)="toggleUserStatus(user)" 
+                              mat-icon-button 
+                              [class]="user.status === 'true' ? '!bg-orange-50 !text-orange-600 hover:!bg-orange-100' : '!bg-green-50 !text-green-600 hover:!bg-green-100'" 
+                              [matTooltip]="user.status === 'true' ? 'Deactivate User' : 'Activate User'"
+                              matTooltipPosition="above"
+                              class="rounded-lg transition-colors duration-200">
+                        <mat-icon class="text-lg">{{ user.status === 'true' ? 'toggle_on' : 'toggle_off' }}</mat-icon>
+                      </button>
+                    }
+                    
+                    <!-- View Only State -->
+                    @if (!canEditUser(user)) {
+                      <div class="text-gray-400 text-sm italic">
+                        View Only
+                      </div>
+                    }
+                  </div>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumns" class="h-16"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns;" 
+                  class="hover:bg-gray-50 transition-colors duration-150 h-14"></tr>
+            </table>
+          </div>
+        }
+      </div>
+    } @else {
+      <!-- No Permission Message -->
+      <div class="bg-white rounded-xl shadow-sm p-8 text-center">
+        <mat-icon class="text-6xl text-gray-300 mb-4">block</mat-icon>
+        <h3 class="text-xl font-semibold text-gray-600 mb-2">Access Denied</h3>
+        <p class="text-gray-500">You don't have permission to access user management.</p>
+      </div>
+    }
+  </div>
+</div>

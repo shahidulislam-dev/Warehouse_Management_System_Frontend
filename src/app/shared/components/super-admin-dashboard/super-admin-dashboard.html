@@ -1,0 +1,153 @@
+<!-- shared/components/dashboard/dashboard.html -->
+<main class="flex-1 p-6 lg:p-8">
+  <div class="max-w-7xl mx-auto">
+    <!-- Dynamic Header Based on Role -->
+    <div class="flex justify-between items-center mb-8">
+      <h1 class="text-3xl font-bold text-gray-900">
+        @if (authService.isSuperAdmin()) {
+          Super Admin Dashboard
+        } @else if (authService.isAdmin()) {
+          Admin Dashboard
+        } @else {
+          Staff Dashboard
+        }
+      </h1>
+      <button (click)="refreshDashboard()" 
+              class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center gap-2">
+        <mat-icon>refresh</mat-icon>
+        <span>Refresh</span>
+      </button>
+    </div>
+    
+    <!-- Statistics Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <!-- Total Users Card (Only for Admin/Super-Admin) -->
+      @if (authService.canManageUsers()) {
+        <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500 hover:shadow-xl transition-shadow">
+          <div class="flex items-center">
+            <div class="p-3 rounded-full bg-blue-100 text-blue-600 mr-4">
+              <mat-icon>people</mat-icon>
+            </div>
+            <div>
+              <p class="text-2xl font-bold text-gray-900">{{ userCount }}</p>
+              <p class="text-gray-600">Total Users</p>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- Warehouses Card (All Roles) -->
+      <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500 hover:shadow-xl transition-shadow">
+        <div class="flex items-center">
+          <div class="p-3 rounded-full bg-green-100 text-green-600 mr-4">
+            <mat-icon>warehouse</mat-icon>
+          </div>
+          <div>
+            <p class="text-2xl font-bold text-gray-900">{{ warehouseCount }}</p>
+            <p class="text-gray-600">Warehouses</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pending Approvals Card (Only for Admin/Super-Admin) -->
+      @if (authService.canManageUsers()) {
+        <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-orange-500 hover:shadow-xl transition-shadow">
+          <div class="flex items-center">
+            <div class="p-3 rounded-full bg-orange-100 text-orange-600 mr-4">
+              <mat-icon>pending_actions</mat-icon>
+            </div>
+            <div>
+              <p class="text-2xl font-bold text-gray-900">{{ pendingApprovals }}</p>
+              <p class="text-gray-600">Pending Approvals</p>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- Role Card -->
+      <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-red-500 hover:shadow-xl transition-shadow">
+        <div class="flex items-center">
+          <div class="p-3 rounded-full bg-red-100 text-red-600 mr-4">
+            <mat-icon>admin_panel_settings</mat-icon>
+          </div>
+          <div>
+            <p class="text-2xl font-bold text-gray-900">
+              @if (authService.isSuperAdmin()) { Super }
+              @else if (authService.isAdmin()) { Admin }
+              @else { Staff }
+            </p>
+            <p class="text-gray-600">Role</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+      <h2 class="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Manage Users (Only for Admin/Super-Admin) -->
+        @if (authService.canManageUsers()) {
+          <button 
+            [routerLink]="getDashboardRoute() + '/users'" 
+            class="flex flex-col items-center justify-center p-6 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors group">
+            <mat-icon class="w-12 h-12 text-blue-600 mb-3 group-hover:scale-110 transition-transform">people</mat-icon>
+            <span class="font-semibold text-gray-900">Manage Users</span>
+          </button>
+        }
+        
+        <!-- Manage Warehouses (All Roles) -->
+        <button 
+          [routerLink]="getDashboardRoute() + '/warehouses'"
+          class="flex flex-col items-center justify-center p-6 bg-green-50 rounded-lg hover:bg-green-100 transition-colors group">
+          <mat-icon class="w-12 h-12 text-green-600 mb-3 group-hover:scale-110 transition-transform">warehouse</mat-icon>
+          <span class="font-semibold text-gray-900">Manage Warehouses</span>
+        </button>
+
+        <!-- Manage Goods (All Roles) -->
+        <button 
+          [routerLink]="getDashboardRoute() + '/goods'"
+          class="flex flex-col items-center justify-center p-6 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors group">
+          <mat-icon class="w-12 h-12 text-purple-600 mb-3 group-hover:scale-110 transition-transform">inventory</mat-icon>
+          <span class="font-semibold text-gray-900">Manage Goods</span>
+        </button>
+        
+        <!-- Add Super Admin (Only for Super-Admin) -->
+        @if (authService.canManageSuperAdmins()) {
+          <button 
+            [routerLink]="getDashboardRoute() + '/create-super-admin'"
+            class="flex flex-col items-center justify-center p-6 bg-red-50 rounded-lg hover:bg-red-100 transition-colors group">
+            <mat-icon class="w-12 h-12 text-red-600 mb-3 group-hover:scale-110 transition-transform">add_moderator</mat-icon>
+            <span class="font-semibold text-gray-900">Add Super Admin</span>
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="bg-white rounded-xl shadow-lg p-6">
+      <h2 class="text-xl font-semibold text-gray-900 mb-4">Recent Activity</h2>
+      <div class="space-y-4">
+        <div class="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg">
+          <div class="p-2 bg-blue-100 rounded-full">
+            <mat-icon class="w-5 h-5 text-blue-600">people</mat-icon>
+          </div>
+          <div>
+            <p class="font-medium text-gray-900">System is running smoothly</p>
+            <p class="text-sm text-gray-600">Just now</p>
+          </div>
+        </div>
+        
+        <div class="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg">
+          <div class="p-2 bg-green-100 rounded-full">
+            <mat-icon class="w-5 h-5 text-green-600">warehouse</mat-icon>
+          </div>
+          <div>
+            <p class="font-medium text-gray-900">Welcome to Warehouse Management System</p>
+            <p class="text-sm text-gray-600">Today</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>

@@ -1,17 +1,14 @@
 <!-- layout.html -->
 <div class="min-h-screen flex flex-col bg-gray-50">
-  <app-header class="w-full" (toggleSidebar)="toggleSidebar()"></app-header>
+  <app-header class="w-full" (toggleSidebar)="toggleSidenav()"></app-header>
   <div class="flex flex-1 min-h-screen">
-    <div class="flex-shrink-0 h-screen sticky top-0 pt-16">
-      <app-sidebar 
-        [isOpen]="isSidebarOpen" 
-        (toggleSidebar)="toggleSidebar()">
-      </app-sidebar>
+    <!-- Sidebar with proper z-index -->
+    <div class="flex-shrink-0 h-screen sticky top-0 pt-16 z-40">
+      <app-sidebar [isOpen]="isSidenavOpen" (toggleSidebar)="toggleSidenav()"></app-sidebar>
     </div>
-    <main class="flex-1 min-h-screen pt-16"> 
-      <div class="p-4 md:p-6 lg:p-8 h-full">
-        <router-outlet></router-outlet>
-      </div>
+    <!-- Main content with proper z-index -->
+    <main class="flex-1 min-h-screen pt-16 overflow-x-hidden z-10">
+      <app-content></app-content>
     </main>
   </div>
 </div>

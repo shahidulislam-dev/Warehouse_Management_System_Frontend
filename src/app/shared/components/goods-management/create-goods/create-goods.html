@@ -1,0 +1,208 @@
+<!--create-goods.html -->
+<div class="p-6 min-w-[90vw] md:min-w-[600px] max-h-[90vh] overflow-y-auto scrollbar-hide">
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-6 pb-4 border-b border-gray-200">
+    <h2 class="text-2xl font-bold text-gray-800">
+      {{ isEdit ? 'Edit Goods' : 'Add New Goods' }}
+    </h2>
+    <button 
+      mat-icon-button 
+      (click)="onCancel()" 
+      class="text-gray-400 hover:text-gray-600 transition-colors duration-200"
+      type="button"
+      [disabled]="loading">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- Form -->
+  <form [formGroup]="goodsForm" (ngSubmit)="onSubmit()" class="space-y-6">
+    
+    <!-- Goods Name -->
+    <div class="space-y-2">
+      <label for="name" class="block text-sm font-medium text-gray-700">
+        Goods Name *
+      </label>
+      <mat-form-field appearance="outline" class="w-full">
+        <input 
+          matInput 
+          id="name"
+          formControlName="name"
+          placeholder="Enter goods name"
+          maxlength="100"
+          [class.error]="hasError('name', 'required') || hasError('name', 'minlength')">
+        
+        <mat-hint align="end">
+          {{ goodsForm.get('name')?.value?.length || 0 }}/100
+        </mat-hint>
+        
+        @if (hasError('name', 'required')) {
+          <mat-error>Goods name is required</mat-error>
+        }
+        @if (hasError('name', 'minlength')) {
+          <mat-error>Goods name must be at least 2 characters</mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <!-- Quantity Only (Unit removed) -->
+    <div class="space-y-2">
+      <label for="quantity" class="block text-sm font-medium text-gray-700">
+        Quantity *
+      </label>
+      <mat-form-field appearance="outline" class="w-full">
+        <input 
+          matInput 
+          type="number"
+          id="quantity"
+          formControlName="quantity"
+          placeholder="0"
+          min="0"
+          max="999999"
+          [class.error]="hasError('quantity', 'required') || hasError('quantity', 'min')">
+        
+        @if (hasError('quantity', 'required')) {
+          <mat-error>Quantity is required</mat-error>
+        }
+        @if (hasError('quantity', 'min')) {
+          <mat-error>Quantity must be 0 or more</mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <!-- Category (now includes unit) -->
+    <div class="space-y-2">
+      <label for="categoryId" class="block text-sm font-medium text-gray-700">
+        Category *
+      </label>
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-select formControlName="categoryId" id="categoryId" placeholder="Select Category">
+          <mat-option value="">Select Category</mat-option>
+          @for (category of data.categories; track category.id) {
+            <mat-option [value]="category.id">
+              {{ category.name }} ({{ category.unit }}) <!-- Show unit in dropdown -->
+            </mat-option>
+          }
+        </mat-select>
+        
+        @if (hasError('categoryId', 'required')) {
+          <mat-error>Category selection is required</mat-error>
+        }
+      </mat-form-field>
+      <p class="text-sm text-gray-500 mt-1">
+        Unit will be automatically set from the selected category
+      </p>
+    </div>
+
+    <!-- Location Section (remains the same) -->
+    <div class="border-t border-gray-200 pt-6">
+      <h3 class="text-lg font-semibold text-gray-700 mb-4">Location Details</h3>
+      
+      <!-- Warehouse Selection -->
+      <div class="space-y-2 mb-4">
+        <label for="warehouseId" class="block text-sm font-medium text-gray-700">
+         Select Warehouse *
+        </label>
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-select formControlName="warehouseId" id="warehouseId" placeholder="Select Warehouse">
+            <mat-option value="">Select Warehouse</mat-option>
+            @for (warehouse of data.warehouses; track warehouse.id) {
+              <mat-option [value]="warehouse.id">
+                {{ warehouse.name }}
+              </mat-option>
+            }
+          </mat-select>
+          
+          @if (hasError('warehouseId', 'required')) {
+            <mat-error>Warehouse selection is required</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <!-- Floor Selection -->
+      <div class="space-y-2 mb-4">
+        <label for="floorId" class="block text-sm font-medium text-gray-700">
+         Select Floor *
+        </label>
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-select formControlName="floorId" id="floorId" [disabled]="!goodsForm.get('warehouseId')?.value" placeholder="Select Floor">
+            <mat-option value="">Select Floor</mat-option>
+            @if (!goodsForm.get('warehouseId')?.value) {
+              <mat-option disabled>
+                Please select a warehouse first
+              </mat-option>
+            }
+            @for (floor of floors; track floor.id) {
+              <mat-option [value]="floor.id">
+                {{ floor.name }}
+              </mat-option>
+            }
+          </mat-select>
+          
+          @if (hasError('floorId', 'required')) {
+            <mat-error>Floor selection is required</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <!-- Room Selection -->
+      <div class="space-y-2">
+        <label for="roomId" class="block text-sm font-medium text-gray-700">
+         Select Room *
+        </label>
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-select formControlName="roomId" id="roomId" [disabled]="!goodsForm.get('floorId')?.value" placeholder="Select Room">
+            <mat-option value="">Select Room</mat-option>
+            @if (!goodsForm.get('warehouseId')?.value) {
+              <mat-option disabled>
+                Please select a warehouse first
+              </mat-option>
+            }
+            @if (goodsForm.get('warehouseId')?.value && !goodsForm.get('floorId')?.value) {
+              <mat-option disabled>
+                Please select a floor first
+              </mat-option>
+            }
+            @for (room of rooms; track room.id) {
+              <mat-option [value]="room.id">
+                {{ room.name }}
+              </mat-option>
+            }
+          </mat-select>
+          
+          @if (hasError('roomId', 'required')) {
+            <mat-error>Room selection is required</mat-error>
+          }
+        </mat-form-field>
+      </div>
+    </div>
+
+  </form>
+</div>
+
+<!-- Action Buttons (remains the same) -->
+<div class="px-6 py-4 border-t border-gray-200 bg-gray-50">
+  <div class="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-3 w-full gap-3">
+    <button
+      type="button"
+      (click)="onCancel()"
+      [disabled]="loading"
+      mat-button
+      class="w-full sm:w-auto px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed">
+      Cancel
+    </button>
+    
+    <button
+      type="submit"
+      [disabled]="goodsForm.invalid || loading"
+      mat-raised-button
+      color="primary"
+      class="w-full sm:w-auto px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+      (click)="onSubmit()">
+      @if (loading) {
+        <mat-spinner diameter="20" strokeWidth="3"></mat-spinner>
+      }
+      <span>{{ loading ? 'Saving...' : (isEdit ? 'Update' : 'Create') }} Goods</span>
+    </button>
+  </div>
+</div>

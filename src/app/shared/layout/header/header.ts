@@ -1,6 +1,7 @@
-import { Component, EventEmitter, Output } from '@angular/core';
-import { AuthService } from '../../../auth/services/auth-service';
+// shared/layout/header/header.component.ts
+import { Component, EventEmitter, Output, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { AuthService } from '../../../auth/services/auth-service';
 
 @Component({
   selector: 'app-header',
@@ -8,14 +9,15 @@ import { Router } from '@angular/router';
   templateUrl: './header.html',
   styleUrl: './header.css'
 })
-export class Header {
-@Output() toggleSidebar = new EventEmitter<void>();
+export class Header implements OnInit {
+  @Output() toggleSidebar = new EventEmitter<void>();
   
   showUserMenu = false;
   currentUser: any = null;
+   logoUrl = '../../../../assets/images/cpdslogo.png';
 
   constructor(
-    private authService: AuthService,
+    public authService: AuthService,
     private router: Router
   ) {}
 
@@ -25,8 +27,6 @@ export class Header {
     this.authService.getCurrentUser$().subscribe(user => {
       this.currentUser = user;
     });
-    
-    
   }
 
   toggleUserMenu(): void {
@@ -49,5 +49,10 @@ export class Header {
 
   getUserRoleDisplay(): string {
     return this.currentUser?.role?.replace('-', ' ') || 'User';
+  }
+
+  // Get dashboard route based on role
+  getDashboardRoute(): string {
+    return this.authService.getDashboardRoute();
   }
 }

@@ -1,0 +1,118 @@
+<!--Create Room html-->
+<mat-dialog-content class="p-6 min-w-[90vw] md:min-w-[500px]">
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-6">
+    <h2 class="text-xl font-bold text-gray-800">
+      {{ isEdit ? 'Edit Room' : 'Add New Room' }}
+    </h2>
+    <button 
+      mat-icon-button 
+      (click)="onCancel()" 
+      class="text-gray-400 hover:text-gray-600"
+      type="button">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- Form -->
+  <form [formGroup]="roomForm" (ngSubmit)="onSubmit()" class="space-y-6">
+    <!-- Warehouse Selection -->
+    <div class="space-y-2">
+      <label class="block text-sm font-medium text-gray-700">
+       Select Warehouse *
+      </label>
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-select formControlName="warehouseId" (selectionChange)="onWarehouseChange($event.value)" placeholder="Select Warehouse">
+          @for (warehouse of warehouses; track warehouse.id) {
+            <mat-option [value]="warehouse.id">
+              {{ warehouse.name }}
+            </mat-option>
+          }
+        </mat-select>
+        <mat-icon matSuffix class="text-gray-400">business</mat-icon>
+        
+        @if (roomForm.get('warehouseId')?.hasError('required')) {
+          <mat-error>Warehouse selection is required</mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <!-- Floor Selection -->
+    <div class="space-y-2">
+      <label class="block text-sm font-medium text-gray-700">
+        Select Floor *
+      </label>
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-select formControlName="floorId" placeholder="Select Floor">
+          @for (floor of floors; track floor.id) {
+            <mat-option [value]="floor.id">
+              {{ floor.name }}
+            </mat-option>
+          }
+        </mat-select>
+        <mat-icon matSuffix class="text-gray-400">layers</mat-icon>
+        
+        @if (roomForm.get('floorId')?.hasError('required')) {
+          <mat-error>Floor selection is required</mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <!-- Room Name Field -->
+    <div class="space-y-2">
+      <label for="name" class="block text-sm font-medium text-gray-700">
+        Room Name *
+      </label>
+      <mat-form-field appearance="outline" class="w-full">
+        <input 
+          matInput 
+          id="name"
+          formControlName="name"
+          placeholder="Enter room name"
+          maxlength="100">
+        <mat-icon matSuffix class="text-gray-400">meeting_room</mat-icon>
+        
+        <mat-hint align="end">
+          {{ roomForm.get('name')?.value?.length || 0 }}/100
+        </mat-hint>
+        
+        @if (roomForm.get('name')?.hasError('required')) {
+          <mat-error>Room name is required</mat-error>
+        }
+        @if (roomForm.get('name')?.hasError('minlength')) {
+          <mat-error>Room name must be at least 2 characters</mat-error>
+        }
+        @if (roomForm.get('name')?.hasError('maxlength')) {
+          <mat-error>Room name cannot exceed 100 characters</mat-error>
+        }
+      </mat-form-field>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions class="p-6 pt-0 justify-end gap-3">
+  <!-- Action Buttons -->
+  <div class="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-3 w-full gap-3">
+    <button
+      type="button"
+      (click)="onCancel()"
+      [disabled]="loading"
+      mat-button
+      class="w-full sm:w-auto px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200 font-medium disabled:opacity-50">
+      Cancel
+    </button>
+    
+    <button
+      type="submit"
+      [disabled]="roomForm.invalid || loading"
+      mat-raised-button
+      color="primary"
+      class="w-full sm:w-auto px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+      (click)="onSubmit()">
+      @if (loading) {
+        <mat-spinner diameter="20"></mat-spinner>
+      }
+      <span>{{ loading ? 'Saving...' : (isEdit ? 'Update' : 'Create') }} Room</span>
+    </button>
+  </div>
+</mat-dialog-actions>
