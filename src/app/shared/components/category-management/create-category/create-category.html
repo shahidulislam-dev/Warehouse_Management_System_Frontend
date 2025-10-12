@@ -57,6 +57,28 @@
         This unit will be used for all goods in this category
       </p>
     </div>
+    <!--Size Unit Field -->
+    <div class="space-y-2">
+      <label for="sizeUnit" class="block text-sm font-medium text-gray-700">
+        Default Size Unit *
+      </label>
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-select formControlName="sizeUnit" id="sizeUnit" placeholder="Select Size Unit">
+          <mat-option value="">Select Size Unit</mat-option>
+          @for (sizeUnit of units; track sizeUnit) {
+            <mat-option [value]="sizeUnit">
+              {{ sizeUnit }}
+            </mat-option>
+          }
+        </mat-select>
+        @if (categoryForm.get('sizeUnit')?.hasError('required')) {
+          <mat-error>Unit selection is required</mat-error>
+        }
+      </mat-form-field>
+      <p class="text-sm text-gray-500">
+        This unit will be used for all goods in this category
+      </p>
+    </div>
   </form>
 </mat-dialog-content>
 

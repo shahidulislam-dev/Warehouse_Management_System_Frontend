@@ -15,11 +15,10 @@ export class CreateCategory implements OnInit {
   isEdit = false;
   loading = false;
 
-  // Add common units for selection
   units: string[] = [
-    'Piece', 'Box', 'Packet', 'Bundle', 'Set',
+    'None','Piece', 'Box', 'Packet', 'Bundle', 'Set',
     'Kg', 'Gram', 'Pound', 'Ounce',
-    'Liter', 'Milliliter', 'Gallon',
+    'Liter', 'Milliliter', 'Gallon','Dram',
     'Meter', 'Centimeter', 'Foot', 'Inch',
     'Carton', 'Pallet', 'Container', 'Unit'
   ];
@@ -35,7 +34,8 @@ export class CreateCategory implements OnInit {
     
     this.categoryForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]],
-      unit: ['', [Validators.required]] // Added unit field
+      unit: ['', [Validators.required]],
+      sizeUnit: ['', [Validators.required]] 
     });
   }
 
@@ -43,7 +43,8 @@ export class CreateCategory implements OnInit {
     if (this.isEdit && this.data.category) {
       this.categoryForm.patchValue({
         name: this.data.category.name,
-        unit: this.data.category.unit // Set unit for edit
+        unit: this.data.category.unit,
+        sizeUnit: this.data.category.sizeUnit 
       });
     }
   }
@@ -53,7 +54,8 @@ export class CreateCategory implements OnInit {
       this.loading = true;
       const request: GoodsCategoryRequest = {
         name: this.categoryForm.value.name.trim(),
-        unit: this.categoryForm.value.unit // Include unit
+        unit: this.categoryForm.value.unit,
+        sizeUnit: this.categoryForm.value.sizeUnit
       };
 
       const operation = this.isEdit 

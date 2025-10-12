@@ -6,19 +6,22 @@ import { Observable } from 'rxjs';
 
 export interface GoodsCategoryRequest {
   name: string;
-  unit: string; // Added unit field
+  unit: string;
+  sizeUnit: string; 
 }
 
 export interface GoodsCategoryResponse {
   id: number;
   name: string;
-  unit: string; // Added unit field
+  unit: string; 
+  sizeUnit: string;
 }
 
 export interface GoodsCategoryWrapper {
   id: number;
   name: string;
   unit: string; 
+  sizeUnit: string;
 }
 
 @Injectable({
@@ -47,21 +50,21 @@ export class CategoryService {
   createCategory(request: GoodsCategoryRequest): Observable<any> {
     return this.http.post(`${this.apiUrl}/create`, request, {
       headers: this.authService.getAuthHeaders(),
-      responseType: 'text' // FIX: Expect text response
+      responseType: 'text'
     });
   }
 
   updateCategory(id: number, request: GoodsCategoryRequest): Observable<any> {
     return this.http.put(`${this.apiUrl}/update/${id}`, request, {
       headers: this.authService.getAuthHeaders(),
-      responseType: 'text' // FIX: Expect text response
+      responseType: 'text' 
     });
   }
 
   deleteCategory(id: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/delete/${id}`, {
       headers: this.authService.getAuthHeaders(),
-      responseType: 'text' // FIX: Expect text response
+      responseType: 'text'
     });
   }
 }

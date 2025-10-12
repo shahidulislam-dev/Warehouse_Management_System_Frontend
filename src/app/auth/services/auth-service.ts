@@ -1,4 +1,4 @@
-// auth-service.ts - Enhanced version (building on your existing code)
+// auth-service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
@@ -27,7 +27,6 @@ export class AuthService {
     this.loadUserRoleFromToken();
   }
 
-  // ==================== EXISTING METHODS (UNCHANGED) ====================
 
   signup(data: any): Observable<any> { 
     return this.http.post(`${this.apiUrl}/signup`, data);
@@ -130,40 +129,25 @@ export class AuthService {
     return role === 'admin' || role === 'super-admin';
   }
 
-  // ==================== NEW ENHANCED ROLE-BASED METHODS ====================
 
-  /**
-   * Check if current user is Staff, Admin, or Super Admin
-   */
   isStaff(): boolean {
     const role = this.getCurrentUserRole();
     return role === 'staff' || role === 'admin' || role === 'super-admin';
   }
 
-  /**
-   * Check if user can manage users (Admin and Super Admin only)
-   */
   canManageUsers(): boolean {
     return this.isAdmin() || this.isSuperAdmin();
   }
 
-  /**
-   * Check if user can manage super admins (Super Admin only)
-   */
   canManageSuperAdmins(): boolean {
     return this.isSuperAdmin();
   }
 
-  /**
-   * Check if user can delete entities (Admin and Super Admin only)
-   */
   canDeleteEntities(): boolean {
     return this.isAdmin() || this.isSuperAdmin();
   }
 
-  /**
-   * Check if user can edit entities (All authenticated users)
-   */
+
   canEditEntities(): boolean {
     return this.isAuthenticated();
   }
@@ -204,7 +188,7 @@ export class AuthService {
     }
     
     if (currentRole === 'admin') {
-      return targetUserRole !== 'super-admin'; // Admin can see all except super-admins
+      return true; // Admin can see all except super-admins
     }
     
     return false; // Staff cannot see any user management
@@ -223,9 +207,7 @@ export class AuthService {
     }
   }
 
-  /**
-   * Get module base path for navigation
-   */
+  
   getModuleBasePath(): string {
     return this.getDashboardRoute();
   }
@@ -250,8 +232,6 @@ export class AuthService {
 
     return featureAccess[feature]?.includes(role) || false;
   }
-
-  // ==================== PRIVATE METHODS (UNCHANGED) ====================
 
   private loadUserRoleFromToken(): void {
     const token = localStorage.getItem('token');
@@ -285,11 +265,6 @@ export class AuthService {
     }
   }
 
-  // ==================== NEW UTILITY METHODS ====================
-
-  /**
-   * Get user role display name
-   */
   getRoleDisplayName(): string {
     const role = this.getCurrentUserRole();
     switch (role) {
@@ -300,17 +275,13 @@ export class AuthService {
     }
   }
 
-  /**
-   * Get user initials for avatar
-   */
+  
   getUserInitials(): string {
     const user = this.getCurrentUser();
     return user?.email?.charAt(0).toUpperCase() || 'U';
   }
 
-  /**
-   * Validate if token is about to expire (within 5 minutes)
-   */
+  
   isTokenExpiringSoon(): boolean {
     const token = localStorage.getItem('token');
     if (!token) return false;
@@ -319,12 +290,10 @@ export class AuthService {
     if (!decoded) return false;
 
     const expiresIn = (decoded.exp * 1000) - Date.now();
-    return expiresIn < 5 * 60 * 1000; // 5 minutes
+    return expiresIn < 5 * 60 * 1000; 
   }
 
-  /**
-   * Get token expiration time
-   */
+ 
   getTokenExpirationTime(): Date | null {
     const token = localStorage.getItem('token');
     if (!token) return null;

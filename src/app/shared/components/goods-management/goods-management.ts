@@ -22,6 +22,7 @@ export class GoodsManagement implements OnInit {
     'id', 
     'name', 
     'quantity', 
+    'size', 
     'categoryUnit', 
     'categoryName', 
     'roomName', 

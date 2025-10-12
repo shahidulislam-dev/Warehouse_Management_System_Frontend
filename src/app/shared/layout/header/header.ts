@@ -28,7 +28,12 @@ export class Header implements OnInit {
       this.currentUser = user;
     });
   }
-
+toggleDesktopSidebar(): void {
+  // Only toggle on desktop
+  if (window.innerWidth >= 768) {
+    this.toggleSidebar.emit();
+  }
+}
   toggleUserMenu(): void {
     this.showUserMenu = !this.showUserMenu;
   }
@@ -55,4 +60,5 @@ export class Header implements OnInit {
   getDashboardRoute(): string {
     return this.authService.getDashboardRoute();
   }
+  
 }

@@ -15,7 +15,7 @@ import { GoodsCategory } from '../../../services/goods-service';
   styleUrl: './category-management.css'
 })
 export class CategoryManagement implements OnInit {
- displayedColumns: string[] = ['id', 'name', 'unit', 'actions'];
+ displayedColumns: string[] = ['id', 'name', 'unit','size-unit', 'actions'];
   dataSource = new MatTableDataSource<GoodsCategory>();
   loading = false;
   today: Date = new Date();

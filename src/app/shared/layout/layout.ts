@@ -10,7 +10,7 @@ import { AuthService } from '../../auth/services/auth-service';
   styleUrl: './layout.css'
 })
 export class Layout implements OnInit {
-  isSidenavOpen = false;
+  isSidenavOpen = true; // Default open on desktop
 
   constructor(
     private authService: AuthService,
@@ -26,5 +26,12 @@ export class Layout implements OnInit {
 
   toggleSidenav(): void {
     this.isSidenavOpen = !this.isSidenavOpen;
+  }
+
+  // Close sidebar on mobile (called from sidebar component)
+  closeMobileSidebar(): void {
+    if (window.innerWidth < 768) {
+      this.isSidenavOpen = false;
+    }
   }
 }

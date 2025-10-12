@@ -69,7 +69,30 @@
         }
       </mat-form-field>
     </div>
+<!-- Quantity Only (Unit removed) -->
+    <div class="space-y-2">
+      <label for="size" class="block text-sm font-medium text-gray-700">
+        Size *
+      </label>
+      <mat-form-field appearance="outline" class="w-full">
+        <input 
+          matInput 
+          type="number"
+          id="size"
+          formControlName="size"
+          placeholder="0"
+          min="0"
+          max="999999"
+          [class.error]="hasError('size', 'required') || hasError('size', 'min')">
 
+        @if (hasError('size', 'required')) {
+          <mat-error>Size is required</mat-error>
+        }
+        @if (hasError('size', 'min')) {
+          <mat-error>Size must be 0 or more</mat-error>
+        }
+      </mat-form-field>
+    </div>
     <!-- Category (now includes unit) -->
     <div class="space-y-2">
       <label for="categoryId" class="block text-sm font-medium text-gray-700">
@@ -80,7 +103,7 @@
           <mat-option value="">Select Category</mat-option>
           @for (category of data.categories; track category.id) {
             <mat-option [value]="category.id">
-              {{ category.name }} ({{ category.unit }}) <!-- Show unit in dropdown -->
+              {{ category.name }} ({{ category.unit }}) [{{category.sizeUnit}}]
             </mat-option>
           }
         </mat-select>

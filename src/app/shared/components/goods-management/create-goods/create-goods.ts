@@ -42,7 +42,7 @@ export class CreateGoods implements OnInit {
     this.goodsForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]],
       quantity: ['', [Validators.required, Validators.min(0), Validators.max(999999)]],
-      // REMOVED: unit field - unit comes from category
+      size: ['', [Validators.required, Validators.min(0), Validators.max(999999)]],
       categoryId: ['', [Validators.required]],
       warehouseId: ['', [Validators.required]],
       floorId: ['', [Validators.required]],
@@ -64,6 +64,7 @@ export class CreateGoods implements OnInit {
     this.goodsForm.patchValue({
       name: this.data.goods.name,
       quantity: this.data.goods.quantity,
+      size: this.data.goods.size,
       categoryId: this.findCategoryIdByName(this.data.goods.categoryName)
     });
 
@@ -175,6 +176,7 @@ export class CreateGoods implements OnInit {
       const request: GoodsRequest = {
         name: formValue.name.trim(),
         quantity: formValue.quantity,
+        size: formValue.size,
         categoryId: formValue.categoryId,
         warehouseId: formValue.warehouseId,
         floorId: formValue.floorId,

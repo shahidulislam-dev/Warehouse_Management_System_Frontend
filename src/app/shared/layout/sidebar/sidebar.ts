@@ -13,8 +13,10 @@ import { AuthService } from '../../../auth/services/auth-service';
 export class Sidebar implements OnInit {
   @Input() isOpen = false;
   @Output() toggleSidebar = new EventEmitter<void>();
+  @Output() menuItemClick = new EventEmitter<void>();
   
   currentModule = '';
+  isMobile = false;
 
   constructor(
     public authService: AuthService,
@@ -22,14 +24,26 @@ export class Sidebar implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.checkScreenSize();
     this.setCurrentModule();
     
-    // Close sidebar on route change (mobile)
+    // Listen for screen size changes
+    window.addEventListener('resize', () => this.checkScreenSize());
+    
+    // Auto-navigate to dashboard on mobile
+    if (this.isMobile) {
+      this.router.navigate([this.currentModule + '/dashboard']);
+    }
+    
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe(() => {
-        this.closeMobileSidebar();
+        this.handleRouteChange();
       });
+  }
+
+  private checkScreenSize(): void {
+    this.isMobile = window.innerWidth < 768;
   }
 
   private setCurrentModule(): void {
@@ -49,7 +63,12 @@ export class Sidebar implements OnInit {
     }
   }
 
-  // Helper method to check if user can see certain menu items
+  private handleRouteChange(): void {
+    if (this.isMobile) {
+      this.menuItemClick.emit();
+    }
+  }
+
   canSeeUserManagement(): boolean {
     return this.authService.canManageUsers();
   }
@@ -58,15 +77,15 @@ export class Sidebar implements OnInit {
     return this.authService.canManageSuperAdmins();
   }
 
-  // Close sidebar on mobile when menu item is clicked
-  closeMobileSidebar(): void {
-  if (window.innerWidth < 768) {
-    this.toggleSidebar.emit(); // closes sidebar on mobile
-  }
-}
-
   // Handle menu item click
   onMenuItemClick(): void {
-    this.closeMobileSidebar();
+    if (this.isMobile) {
+      this.menuItemClick.emit();
+    }
+  }
+
+  // Toggle sidebar
+  onToggleSidebar(): void {
+    this.toggleSidebar.emit();
   }
 }

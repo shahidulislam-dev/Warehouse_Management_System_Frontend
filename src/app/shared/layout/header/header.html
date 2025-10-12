@@ -3,16 +3,26 @@
   <div class="">
     <div class="flex items-center justify-between p-4">
       <!-- Left side -->
-      <div class="flex items-center space-x-4">
-        <button (click)="toggleSidebar.emit()" class="p-2 rounded-lg hover:bg-green-700 transition-colors md:hidden">
+      <div class="flex items-center space-x-2">
+        <!-- Mobile menu button -->
+        <button (click)="toggleSidebar.emit()" class="p-2 rounded-lg hover:bg-white-700 transition-colors md:hidden">
           <mat-icon>menu</mat-icon>
         </button>
+
+        <!-- Desktop menu button -->
+        <button (click)="toggleSidebar.emit()" class="p-2 mt-3 rounded-lg hover:bg-green-700 transition-colors hidden md:block">
+          <mat-icon>menu</mat-icon>
+        </button>
+
+        <!-- Logo and Title -->
         <div class="flex items-center gap-2">
-          <img class="w-13 h-13 object-contain" [src]="logoUrl" alt="Header Logo"
+          <img class="w-10 h-10 object-contain" [src]="logoUrl" alt="Header Logo"
             onerror="this.style.display='none'" />
-          <h1 class="text-xl font-bold">Warehouse Management System</h1>
+          <h1 class="text-sm md:text-xl font-bold">Warehouse Management System</h1>
         </div>
-        <span class="bg-yellow-500 text-green-900 px-2 py-1 rounded-full text-sm font-semibold capitalize">
+
+        <!-- Role badge -->
+        <span class="bg-yellow-500 text-green-900 px-2 py-1 rounded-full text-sm font-semibold capitalize hidden sm:block">
           {{ getUserRoleDisplay() }}
         </span>
       </div>
@@ -24,8 +34,8 @@
           <div class="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center text-green-900 font-bold">
             {{ getUserInitials() }}
           </div>
-          <span class="hidden sm:block text-sm">{{ currentUser?.email }}</span>
-          <mat-icon>arrow_drop_down</mat-icon>
+          <span class="hidden sm:block text-sm font-medium">{{ currentUser?.email }}</span>
+          <mat-icon class="hidden sm:block">arrow_drop_down</mat-icon>
         </button>
 
         <!-- User dropdown menu -->
@@ -35,20 +45,40 @@
           @if (currentUser) {
           <div class="px-4 py-3 border-b border-gray-100">
             <p class="text-sm font-medium text-gray-900 truncate">{{ currentUser.email }}</p>
-            <p class="text-xs text-gray-500 capitalize">{{ currentUser.role }}</p>
+            <p class="text-xs text-gray-500 capitalize mt-1">{{ currentUser.role?.replace('-', ' ') }}</p>
           </div>
           }
 
+          <!-- Dashboard Link -->
+          <a [routerLink]="getDashboardRoute()"
+            (click)="closeUserMenu()"
+            class="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 flex items-center space-x-2 transition-colors cursor-pointer">
+            <mat-icon class="text-gray-500 text-lg">dashboard</mat-icon>
+            <span class="text-sm">Dashboard</span>
+          </a>
+
+          <!-- Profile -->
           <button
             class="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 flex items-center space-x-2 transition-colors">
             <mat-icon class="text-gray-500 text-lg">person</mat-icon>
             <span class="text-sm">Profile</span>
           </button>
 
-          <button (click)="logout()"
+          <!-- Settings -->
+          <button
             class="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 flex items-center space-x-2 transition-colors">
-            <mat-icon class="text-gray-500 text-lg">logout</mat-icon>
-            <span class="text-sm">Logout</span>
+            <mat-icon class="text-gray-500 text-lg">settings</mat-icon>
+            <span class="text-sm">Settings</span>
+          </button>
+
+          <!-- Divider -->
+          <div class="border-t border-gray-100 my-1"></div>
+
+          <!-- Logout -->
+          <button (click)="logout()"
+            class="w-full px-4 py-2 text-left text-red-600 hover:bg-red-50 flex items-center space-x-2 transition-colors">
+            <mat-icon class="text-red-500 text-lg">logout</mat-icon>
+            <span class="text-sm font-medium">Logout</span>
           </button>
         </div>
         }

@@ -2,12 +2,17 @@
 <div class="min-h-screen flex flex-col bg-gray-50">
   <app-header class="w-full" (toggleSidebar)="toggleSidenav()"></app-header>
   <div class="flex flex-1 min-h-screen">
-    <!-- Sidebar with proper z-index -->
+    <!-- Sidebar - Always visible on desktop, conditionally visible on mobile -->
     <div class="flex-shrink-0 h-screen sticky top-0 pt-16 z-40">
-      <app-sidebar [isOpen]="isSidenavOpen" (toggleSidebar)="toggleSidenav()"></app-sidebar>
+      <app-sidebar 
+        [isOpen]="isSidenavOpen" 
+        (toggleSidebar)="toggleSidenav()"
+        (menuItemClick)="closeMobileSidebar()">
+      </app-sidebar>
     </div>
-    <!-- Main content with proper z-index -->
-    <main class="flex-1 min-h-screen pt-16 overflow-x-hidden z-10">
+    
+    <!-- Main content -->
+    <main class="flex-1 min-h-screen pt-5 md:pt-10 overflow-x-hidden z-10">
       <app-content></app-content>
     </main>
   </div>

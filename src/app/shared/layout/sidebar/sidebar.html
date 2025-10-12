@@ -1,11 +1,15 @@
 <!-- shared/layout/sidebar/sidebar.html -->
-<div [ngClass]="isOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'"
-     class="fixed md:relative inset-y-0 left-0 z-40 w-80 bg-white shadow-xl transform transition-all duration-500 ease-in-out md:translate-x-0 border-r border-gray-200 h-full">
+<div [ngClass]="{
+  'translate-x-0 shadow-2xl': isOpen || !isMobile,
+  '-translate-x-full': !isOpen && isMobile,
+  'w-80': isOpen,
+  'w-20': !isOpen && !isMobile
+}"
+     class="fixed md:relative inset-y-0 left-0 z-40 bg-white shadow-xl transform transition-all duration-500 ease-in-out md:translate-x-0 border-r border-gray-200 h-full overflow-hidden">
   
-  <!-- Sidebar content -->
   <div class="h-full flex flex-col">
     <!-- Sidebar Header - Mobile only -->
-    <div class="p-6 border-b border-gray-200 md:hidden bg-green-800">
+    <div class="p-6 border-b border-gray-200 md:hidden bg-green-800" *ngIf="isOpen">
       <div class="flex items-center space-x-3">
         <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-lg">
           <mat-icon class="text-green-700 text-2xl">inventory</mat-icon>
@@ -17,8 +21,8 @@
       </div>
     </div>
 
-    <!-- Desktop Sidebar Header -->
-    <div class="hidden md:block p-6 border-b border-gray-200 mt-4 bg-amber-300">
+    <!-- Desktop Sidebar Header - Show only when expanded -->
+    <div class="hidden md:block p-6 border-b border-gray-200 mt-4 bg-amber-300" *ngIf="isOpen">
       <div class="flex items-center space-x-3">
         <div class="w-10 h-10 rounded-xl flex items-center justify-center shadow-md">
           <mat-icon class="text-white text-lg" color="primary">inventory</mat-icon>
@@ -38,6 +42,15 @@
       </div>
     </div>
 
+    <!-- Desktop Collapsed Header - Show only icons when collapsed -->
+    <div class="hidden md:block p-4 border-b border-gray-200 mt-4 bg-amber-300" *ngIf="!isOpen && !isMobile">
+      <div class="flex items-center justify-center">
+        <div class="w-10 h-10 rounded-xl flex items-center justify-center shadow-md bg-white">
+          <mat-icon class="text-green-700 text-lg">inventory</mat-icon>
+        </div>
+      </div>
+    </div>
+
     <nav class="flex-1 px-4 py-6 overflow-y-auto sidebar-scroll">
       <ul class="space-y-2">
         <!-- Dashboard -->
@@ -45,11 +58,16 @@
           <a [routerLink]="currentModule + '/dashboard'" 
              routerLinkActive="bg-blue-100 text-blue-600 border-r-4 border-blue-600 shadow-md"
              (click)="onMenuItemClick()"
-             class="flex items-center space-x-4 p-4 rounded-xl hover:bg-gray-100 hover:shadow-sm transition-all duration-300 group">
-            <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center group-hover:bg-blue-100 transition-colors">
+             class="flex items-center p-4 rounded-xl hover:bg-gray-100 hover:shadow-sm transition-all duration-300 group"
+             [class]="isOpen ? 'justify-start space-x-4' : 'justify-center'"
+             [matTooltip]="!isOpen && !isMobile ? 'Dashboard' : ''"
+             matTooltipPosition="right">
+            <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center group-hover:bg-blue-100 transition-colors flex-shrink-0">
               <mat-icon class="text-blue-600 text-lg">dashboard</mat-icon>
             </div>
-            <span class="font-semibold text-sm md:text-lg">Dashboard</span>
+            @if (isOpen || isMobile) {
+              <span class="font-semibold text-sm md:text-lg">Dashboard</span>
+            }
           </a>
         </li>
 
@@ -59,11 +77,16 @@
             <a [routerLink]="currentModule + '/users'" 
                routerLinkActive="bg-blue-100 text-blue-600 border-r-4 border-blue-600 shadow-md"
                (click)="onMenuItemClick()"
-               class="flex items-center space-x-4 p-4 rounded-xl hover:bg-gray-100 hover:shadow-sm transition-all duration-300 group">
-              <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center group-hover:bg-blue-100 transition-colors">
+               class="flex items-center p-4 rounded-xl hover:bg-gray-100 hover:shadow-sm transition-all duration-300 group"
+               [class]="isOpen ? 'justify-start space-x-4' : 'justify-center'"
+               [matTooltip]="!isOpen && !isMobile ? 'User Management' : ''"
+               matTooltipPosition="right">
+              <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center group-hover:bg-blue-100 transition-colors flex-shrink-0">
                 <mat-icon class="text-blue-600 text-lg">people</mat-icon>
               </div>
-              <span class="font-semibold text-sm md:text-lg">User Management</span>
+              @if (isOpen || isMobile) {
+                <span class="font-semibold text-sm md:text-lg">User Management</span>
+              }
             </a>
           </li>
         }
@@ -73,11 +96,16 @@
           <a [routerLink]="currentModule + '/warehouses'" 
              routerLinkActive="bg-green-100 text-green-600 border-r-4 border-green-600 shadow-md"
              (click)="onMenuItemClick()"
-             class="flex items-center space-x-4 p-4 rounded-xl hover:bg-gray-100 hover:shadow-sm transition-all duration-300 group">
-            <div class="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center group-hover:bg-green-100 transition-colors">
+             class="flex items-center p-4 rounded-xl hover:bg-gray-100 hover:shadow-sm transition-all duration-300 group"
+             [class]="isOpen ? 'justify-start space-x-4' : 'justify-center'"
+             [matTooltip]="!isOpen && !isMobile ? 'Warehouses' : ''"
+             matTooltipPosition="right">
+            <div class="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center group-hover:bg-green-100 transition-colors flex-shrink-0">
               <mat-icon class="text-green-600 text-lg">warehouse</mat-icon>
             </div>
-            <span class="font-semibold text-sm md:text-lg">Warehouses</span>
+            @if (isOpen || isMobile) {
+              <span class="font-semibold text-sm md:text-lg">Warehouses</span>
+            }
           </a>
         </li>
 
@@ -86,11 +114,16 @@
           <a [routerLink]="currentModule + '/floors'" 
              routerLinkActive="bg-blue-100 text-blue-600 border-r-4 border-blue-600 shadow-md"
              (click)="onMenuItemClick()"
-             class="flex items-center space-x-4 p-4 rounded-xl hover:bg-gray-100 hover:shadow-sm transition-all duration-300 group">
-            <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center group-hover:bg-blue-100 transition-colors">
+             class="flex items-center p-4 rounded-xl hover:bg-gray-100 hover:shadow-sm transition-all duration-300 group"
+             [class]="isOpen ? 'justify-start space-x-4' : 'justify-center'"
+             [matTooltip]="!isOpen && !isMobile ? 'Floors' : ''"
+             matTooltipPosition="right">
+            <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center group-hover:bg-blue-100 transition-colors flex-shrink-0">
               <mat-icon class="text-blue-600 text-lg">layers</mat-icon>
             </div>
-            <span class="font-semibold text-sm md:text-lg">Floors</span>
+            @if (isOpen || isMobile) {
+              <span class="font-semibold text-sm md:text-lg">Floors</span>
+            }
           </a>
         </li>
 
@@ -99,11 +132,16 @@
           <a [routerLink]="currentModule + '/rooms'" 
              routerLinkActive="bg-blue-100 text-blue-600 border-r-4 border-blue-600 shadow-md"
              (click)="onMenuItemClick()"
-             class="flex items-center space-x-4 p-4 rounded-xl hover:bg-gray-100 hover:shadow-sm transition-all duration-300 group">
-            <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center group-hover:bg-blue-100 transition-colors">
+             class="flex items-center p-4 rounded-xl hover:bg-gray-100 hover:shadow-sm transition-all duration-300 group"
+             [class]="isOpen ? 'justify-start space-x-4' : 'justify-center'"
+             [matTooltip]="!isOpen && !isMobile ? 'Rooms' : ''"
+             matTooltipPosition="right">
+            <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center group-hover:bg-blue-100 transition-colors flex-shrink-0">
               <mat-icon class="text-blue-600 text-lg">room_preferences</mat-icon>
             </div>
-            <span class="font-semibold text-sm md:text-lg">Rooms</span>
+            @if (isOpen || isMobile) {
+              <span class="font-semibold text-sm md:text-lg">Rooms</span>
+            }
           </a>
         </li>
 
@@ -112,11 +150,16 @@
           <a [routerLink]="currentModule + '/goods-category'" 
              routerLinkActive="bg-blue-100 text-blue-600 border-r-4 border-blue-600 shadow-md"
              (click)="onMenuItemClick()"
-             class="flex items-center space-x-4 p-4 rounded-xl hover:bg-gray-100 hover:shadow-sm transition-all duration-300 group">
-            <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center group-hover:bg-blue-100 transition-colors">
+             class="flex items-center p-4 rounded-xl hover:bg-gray-100 hover:shadow-sm transition-all duration-300 group"
+             [class]="isOpen ? 'justify-start space-x-4' : 'justify-center'"
+             [matTooltip]="!isOpen && !isMobile ? 'Category' : ''"
+             matTooltipPosition="right">
+            <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center group-hover:bg-blue-100 transition-colors flex-shrink-0">
               <mat-icon class="text-blue-600 text-lg">category</mat-icon>
             </div>
-            <span class="font-semibold text-sm md:text-lg">Category</span>
+            @if (isOpen || isMobile) {
+              <span class="font-semibold text-sm md:text-lg">Category</span>
+            }
           </a>
         </li>
 
@@ -125,17 +168,22 @@
           <a [routerLink]="currentModule + '/goods'" 
              routerLinkActive="bg-blue-100 text-blue-600 border-r-4 border-blue-600 shadow-md"
              (click)="onMenuItemClick()"
-             class="flex items-center space-x-4 p-4 rounded-xl hover:bg-gray-100 hover:shadow-sm transition-all duration-300 group">
-            <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center group-hover:bg-blue-100 transition-colors">
+             class="flex items-center p-4 rounded-xl hover:bg-gray-100 hover:shadow-sm transition-all duration-300 group"
+             [class]="isOpen ? 'justify-start space-x-4' : 'justify-center'"
+             [matTooltip]="!isOpen && !isMobile ? 'Goods' : ''"
+             matTooltipPosition="right">
+            <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center group-hover:bg-blue-100 transition-colors flex-shrink-0">
               <mat-icon class="text-blue-600 text-lg">inventory</mat-icon>
             </div>
-            <span class="font-semibold text-sm md:text-lg">Goods</span>
+            @if (isOpen || isMobile) {
+              <span class="font-semibold text-sm md:text-lg">Goods</span>
+            }
           </a>
         </li>
 
         <!-- Super Admin Only Features -->
         @if (canSeeSuperAdminFeatures()) {
-          <li class="pt-6 mt-6 border-t border-gray-200">
+          <li class="pt-6 mt-6 border-t border-gray-200" *ngIf="isOpen || isMobile">
             <p class="px-4 text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Super Admin</p>
           </li>
           
@@ -143,19 +191,24 @@
             <a [routerLink]="currentModule + '/create-super-admin'" 
                routerLinkActive="bg-purple-100 text-purple-600 border-r-4 border-purple-600 shadow-md"
                (click)="onMenuItemClick()"
-               class="flex items-center space-x-4 p-4 rounded-xl hover:bg-gray-100 hover:shadow-sm transition-all duration-300 group">
-              <div class="w-10 h-10 bg-purple-50 rounded-lg flex items-center justify-center group-hover:bg-purple-100 transition-colors">
+               class="flex items-center p-4 rounded-xl hover:bg-gray-100 hover:shadow-sm transition-all duration-300 group"
+               [class]="isOpen ? 'justify-start space-x-4' : 'justify-center'"
+               [matTooltip]="!isOpen && !isMobile ? 'Add Super Admin' : ''"
+               matTooltipPosition="right">
+              <div class="w-10 h-10 bg-purple-50 rounded-lg flex items-center justify-center group-hover:bg-purple-100 transition-colors flex-shrink-0">
                 <mat-icon class="text-purple-600 text-lg">admin_panel_settings</mat-icon>
               </div>
-              <span class="font-semibold text-sm md:text-lg">Add Super Admin</span>
+              @if (isOpen || isMobile) {
+                <span class="font-semibold text-sm md:text-lg">Add Super Admin</span>
+              }
             </a>
           </li>
         }
       </ul>
     </nav>
 
-    <!-- Sidebar Footer -->
-    <div class="p-4 border-t border-gray-200 bg-gray-50">
+    <!-- Sidebar Footer - Show only when expanded -->
+    <div class="p-4 border-t border-gray-200 bg-gray-50" *ngIf="isOpen || isMobile">
       <div class="text-center">
         <p class="text-xs text-gray-600 font-medium">Warehouse Pro v1.0</p>
         <p class="text-xs text-gray-500 mt-1">Management System</p>
@@ -165,7 +218,7 @@
 </div>
 
 <!-- Overlay for mobile -->
-@if (isOpen) {
-  <div (click)="toggleSidebar.emit()"
-       class="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm z-30 md:hidden transition-all duration-300"></div>
+@if (isOpen && isMobile) {
+  <div (click)="onToggleSidebar()"
+       class="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm z-30 transition-all duration-300"></div>
 }
