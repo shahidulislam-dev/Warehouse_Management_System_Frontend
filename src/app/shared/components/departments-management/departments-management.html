@@ -1,0 +1,93 @@
+<div class="bg-gray-50 p-0 md:p-6 lg:p-8 overflow-y-auto scrollbar-hide">
+  <div class="">
+    <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        <div>
+          <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-2">Departments Management</h1>
+          <p class="text-gray-500 text-base">Manage departments for event transactions</p>
+        </div>
+
+        @if (authService.isAuthenticated()) {
+          <button 
+            (click)="openCreateDialog()"
+            class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium shadow-md">
+            <span class="text-lg font-semibold">+ Add New Department</span>
+          </button>
+        }
+      </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+      @if (loading) {
+        <div class="p-8 text-center">
+          <mat-spinner diameter="28"></mat-spinner>
+          <p class="mt-3 text-lg">Loading departments...</p>
+        </div>
+      }
+
+      @if (!loading && dataSource.data.length === 0) {
+        <div class="p-8 text-center">
+          <mat-icon class="text-6xl text-gray-300 mb-4">business</mat-icon>
+          <h3 class="text-xl font-semibold text-gray-600 mb-2">No Departments Found</h3>
+          @if (authService.canDeleteEntities()) {
+            <button (click)="openCreateDialog()" class="bg-green-600 text-white px-6 py-3 rounded-lg">
+              Add First Department
+            </button>
+          }
+        </div>
+      }
+
+      @if (!loading && dataSource.data.length > 0) {
+        <div class="overflow-x-auto">
+          <table mat-table [dataSource]="dataSource" class="w-full">
+            <ng-container matColumnDef="id">
+              <th mat-header-cell *matHeaderCellDef class="px-4 py-4 text-left font-semibold text-gray-700 bg-gray-50">ID</th>
+              <td mat-cell *matCellDef="let dept" class="px-4 py-4 border-t">{{ dept.id }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="departmentName">
+              <th mat-header-cell *matHeaderCellDef class="px-4 py-4 text-left font-semibold text-gray-700 bg-gray-50">Department Name</th>
+              <td mat-cell *matCellDef="let dept" class="px-4 py-4 border-t font-medium">{{ dept.departmentName }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef class="px-4 py-4 text-center font-semibold text-gray-700 bg-gray-50">Actions</th>
+              <td mat-cell *matCellDef="let dept" class="px-4 py-4 border-t">
+                <div class="flex gap-2 justify-center">
+                  <button (click)="editDepartment(dept)" mat-icon-button class="!text-blue-600">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  @if (authService.canDeleteEntities()) {
+                    <button (click)="deleteDepartment(dept)" mat-icon-button class="!text-red-600">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  }
+                </div>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns" class="h-16"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover:bg-gray-50 h-14"></tr>
+          </table>
+        </div>
+      }
+
+      <!-- Table Footer -->
+      @if (!loading && dataSource.data.length > 0) {
+        <div class="flex items-center justify-between px-4 py-3 bg-gray-50 border-t border-gray-200">
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+            <p class="text-sm text-gray-600">
+              Showing
+              <span class="font-semibold">{{ dataSource.filteredData.length }}</span> department{{
+                dataSource.filteredData.length !== 1 ? 's' : ''
+              }}
+            </p>
+          </div>
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+            <p class="text-sm text-gray-600">Last updated: {{ today | date: 'medium' }}</p>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</div>

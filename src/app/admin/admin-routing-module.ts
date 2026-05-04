@@ -9,6 +9,9 @@ import { FloorManagement } from '../shared/components/floor-management/floor-man
 import { RoomsManagement } from '../shared/components/rooms-management/rooms-management';
 import { CategoryManagement } from '../shared/components/category-management/category-management';
 import { GoodsManagement } from '../shared/components/goods-management/goods-management';
+import { EventsManagement } from '../shared/components/events-management/events-management';
+import { DepartmentsManagement } from '../shared/components/departments-management/departments-management';
+import { TransactionsManagement } from '../shared/components/transactions-management/transactions-management';
 
 const routes: Routes = [
   {
@@ -31,7 +34,10 @@ const routes: Routes = [
       { path: 'goods/all', component: GoodsManagement },
       { path: 'goods/warehouse/:warehouseId', component: GoodsManagement },
       { path: 'goods/warehouse/:warehouseId/floor/:floorId', component: GoodsManagement },
-      { path: 'goods/warehouse/:warehouseId/floor/:floorId/room/:roomId', component: GoodsManagement }
+      { path: 'goods/warehouse/:warehouseId/floor/:floorId/room/:roomId', component: GoodsManagement },
+       { path: 'events', component: EventsManagement },
+      { path: 'departments', component: DepartmentsManagement },
+      { path: 'transactions', component: TransactionsManagement }
     ]
   }
 ];

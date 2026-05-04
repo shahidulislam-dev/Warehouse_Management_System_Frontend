@@ -23,6 +23,12 @@ import { CreateCategory } from './components/category-management/create-category
 import { CreateGoods } from './components/goods-management/create-goods/create-goods';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { EventsManagement } from './components/events-management/events-management';
+import { CreateEvents } from './components/events-management/create-events/create-events';
+import { DepartmentsManagement } from './components/departments-management/departments-management';
+import { CreateDepartments } from './components/departments-management/create-departments/create-departments';
+import { TransactionsManagement } from './components/transactions-management/transactions-management';
+import { CreateTransactions } from './components/transactions-management/create-transactions/create-transactions';
 
 
 
@@ -50,7 +56,13 @@ import { MatButtonModule } from '@angular/material/button';
     CreateFloor,
     CreateRoom,
     CreateGoods,
-    CreateCategory
+    CreateCategory,
+    EventsManagement,
+    CreateEvents,
+    DepartmentsManagement,
+    CreateDepartments,
+    TransactionsManagement,
+    CreateTransactions
   ],
   imports: [
     CommonModule,
@@ -69,7 +81,10 @@ import { MatButtonModule } from '@angular/material/button';
     FloorManagement,
     RoomsManagement,
     GoodsManagement,
-    CategoryManagement
+    CategoryManagement,
+    EventsManagement,
+    DepartmentsManagement,
+    TransactionsManagement
   ]
 })
 export class SharedModule { }

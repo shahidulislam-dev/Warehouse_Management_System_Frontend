@@ -1,0 +1,75 @@
+<div class="p-6 min-w-[90vw] md:min-w-[500px] max-h-[90vh] overflow-y-auto scrollbar-hide">
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-6 pb-4 border-b border-gray-200">
+    <h2 class="text-2xl font-bold text-gray-800">
+      {{ isEdit ? 'Edit Department' : 'Add New Department' }}
+    </h2>
+    <button 
+      mat-icon-button 
+      (click)="onCancel()" 
+      class="text-gray-400 hover:text-gray-600 transition-colors duration-200"
+      type="button"
+      [disabled]="loading">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- Form -->
+  <form [formGroup]="departmentForm" (ngSubmit)="onSubmit()" class="space-y-6">
+    
+    <!-- Department Name -->
+    <div class="space-y-2">
+      <label for="departmentName" class="block text-sm font-medium text-gray-700">
+        Department Name *
+      </label>
+      <mat-form-field appearance="outline" class="w-full">
+        <input 
+          matInput 
+          id="departmentName"
+          formControlName="departmentName"
+          placeholder="Enter department name"
+          maxlength="100"
+          [class.error]="hasError('departmentName', 'required') || hasError('departmentName', 'minlength')">
+        
+        <mat-hint align="end">
+          {{ departmentForm.get('departmentName')?.value?.length || 0 }}/100
+        </mat-hint>
+        
+        @if (hasError('departmentName', 'required')) {
+          <mat-error>Department name is required</mat-error>
+        }
+        @if (hasError('departmentName', 'minlength')) {
+          <mat-error>Department name must be at least 2 characters</mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+  </form>
+</div>
+
+<!-- Action Buttons -->
+<div class="px-6 py-4 border-t border-gray-200 bg-gray-50">
+  <div class="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-3 w-full gap-3">
+    <button
+      type="button"
+      (click)="onCancel()"
+      [disabled]="loading"
+      mat-button
+      class="w-full sm:w-auto px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed">
+      Cancel
+    </button>
+    
+    <button
+      type="submit"
+      [disabled]="departmentForm.invalid || loading"
+      mat-raised-button
+      color="primary"
+      class="w-full sm:w-auto px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+      (click)="onSubmit()">
+      @if (loading) {
+        <mat-spinner diameter="20" strokeWidth="3"></mat-spinner>
+      }
+      <span>{{ loading ? 'Saving...' : (isEdit ? 'Update' : 'Create') }} Department</span>
+    </button>
+  </div>
+</div>

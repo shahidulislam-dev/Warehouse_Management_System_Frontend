@@ -227,7 +227,10 @@ export class AuthService {
       'floor_management': ['staff', 'admin', 'super-admin'],
       'room_management': ['staff', 'admin', 'super-admin'],
       'goods_management': ['staff', 'admin', 'super-admin'],
-      'category_management': ['staff', 'admin', 'super-admin']
+      'category_management': ['staff', 'admin', 'super-admin'],
+      'event_management': ['staff', 'admin', 'super-admin'],
+      'department_management': ['staff', 'admin', 'super-admin'],
+      'transaction_management': ['staff', 'admin', 'super-admin'],
     };
 
     return featureAccess[feature]?.includes(role) || false;

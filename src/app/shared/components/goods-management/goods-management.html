@@ -13,7 +13,7 @@
           </p>
         </div>
 
-        @if (authService.canDeleteEntities()) {
+        @if (authService.isAuthenticated()) {
           <button 
             (click)="openAddGoodsDialog()"
             class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2">

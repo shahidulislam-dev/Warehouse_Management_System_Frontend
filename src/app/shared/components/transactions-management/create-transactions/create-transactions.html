@@ -1,0 +1,199 @@
+<div class="p-6 min-w-[90vw] md:min-w-[700px] max-h-[90vh] overflow-y-auto scrollbar-hide">
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-6 pb-4 border-b border-gray-200">
+    <h2 class="text-2xl font-bold text-gray-800">Create New Transaction</h2>
+    <button 
+      mat-icon-button 
+      (click)="onCancel()" 
+      class="text-gray-400 hover:text-gray-600"
+      type="button"
+      [disabled]="loading">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- Form -->
+  <form [formGroup]="transactionForm" (ngSubmit)="onSubmit()" class="space-y-6">
+    
+    <!-- Transaction Category -->
+    <div class="space-y-2">
+      <label class="block text-sm font-medium text-gray-700">Transaction Type *</label>
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-select formControlName="transactionCategory" placeholder="Select type">
+          <mat-option value="NORMAL">Normal Transaction</mat-option>
+          <mat-option value="EVENT">Event Transaction</mat-option>
+        </mat-select>
+        @if (hasError('transactionCategory', 'required')) {
+          <mat-error>Transaction type is required</mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <!-- Common Fields -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <!-- Approved By -->
+      <div class="space-y-2">
+        <label class="block text-sm font-medium text-gray-700">Approved By *</label>
+        <mat-form-field appearance="outline" class="w-full">
+          <input matInput formControlName="approvedBy" placeholder="Enter approver name">
+          @if (hasError('approvedBy', 'required')) {
+            <mat-error>Approver name is required</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <!-- Goods -->
+      <div class="space-y-2">
+        <label class="block text-sm font-medium text-gray-700">Goods *</label>
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-select formControlName="goodsId" placeholder="Select goods">
+            @for (goods of data.goods; track goods.id) {
+              <mat-option [value]="goods.id">{{ goods.name }} (Available: {{ goods.quantity }})</mat-option>
+            }
+          </mat-select>
+          @if (hasError('goodsId', 'required')) {
+            <mat-error>Goods selection is required</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <!-- Quantity -->
+      <div class="space-y-2">
+        <label class="block text-sm font-medium text-gray-700">Quantity *</label>
+        <mat-form-field appearance="outline" class="w-full">
+          <input matInput type="number" formControlName="quantity" placeholder="Enter quantity" min="1">
+          @if (hasError('quantity', 'required')) {
+            <mat-error>Quantity is required</mat-error>
+          }
+          @if (hasError('quantity', 'min')) {
+            <mat-error>Quantity must be at least 1</mat-error>
+          }
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- NORMAL TRANSACTION FIELDS -->
+    @if (!isEventTransaction) {
+      <div class="border-t border-gray-200 pt-6">
+        <h3 class="text-lg font-semibold text-gray-700 mb-4">Receiver Details</h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700">Receiver Name *</label>
+            <mat-form-field appearance="outline" class="w-full">
+              <input matInput formControlName="receiverName" placeholder="Enter receiver name">
+              @if (hasError('receiverName', 'required')) {
+                <mat-error>Receiver name is required</mat-error>
+              }
+            </mat-form-field>
+          </div>
+
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700">Contact Number *</label>
+            <mat-form-field appearance="outline" class="w-full">
+              <input matInput formControlName="receiverContact" placeholder="Enter contact number">
+              @if (hasError('receiverContact', 'required')) {
+                <mat-error>Contact number is required</mat-error>
+              }
+            </mat-form-field>
+          </div>
+
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700">Duty Place *</label>
+            <mat-form-field appearance="outline" class="w-full">
+              <input matInput formControlName="receiverDutyPlace" placeholder="Enter duty place">
+              @if (hasError('receiverDutyPlace', 'required')) {
+                <mat-error>Duty place is required</mat-error>
+              }
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- EVENT TRANSACTION FIELDS -->
+    @if (isEventTransaction) {
+      <div class="border-t border-gray-200 pt-6">
+        <h3 class="text-lg font-semibold text-gray-700 mb-4">Event Details</h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700">Event *</label>
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-select formControlName="eventId" placeholder="Select event">
+                @for (event of data.events; track event.id) {
+                  <mat-option [value]="event.id">{{ event.eventName }}</mat-option>
+                }
+              </mat-select>
+              @if (hasError('eventId', 'required')) {
+                <mat-error>Event is required</mat-error>
+              }
+            </mat-form-field>
+          </div>
+
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700">Department *</label>
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-select formControlName="departmentId" placeholder="Select department">
+                @for (dept of data.departments; track dept.id) {
+                  <mat-option [value]="dept.id">{{ dept.departmentName }}</mat-option>
+                }
+              </mat-select>
+              @if (hasError('departmentId', 'required')) {
+                <mat-error>Department is required</mat-error>
+              }
+            </mat-form-field>
+          </div>
+
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700">Receiver Name *</label>
+            <mat-form-field appearance="outline" class="w-full">
+              <input matInput formControlName="eventReceiverName" placeholder="Enter receiver name">
+              @if (hasError('eventReceiverName', 'required')) {
+                <mat-error>Receiver name is required</mat-error>
+              }
+            </mat-form-field>
+          </div>
+
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700">Receiver Contact *</label>
+            <mat-form-field appearance="outline" class="w-full">
+              <input matInput formControlName="eventReceiverContact" placeholder="Enter contact number">
+              @if (hasError('eventReceiverContact', 'required')) {
+                <mat-error>Contact number is required</mat-error>
+              }
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+    }
+
+  </form>
+</div>
+
+<!-- Action Buttons -->
+<div class="px-6 py-4 border-t border-gray-200 bg-gray-50">
+  <div class="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-3 w-full gap-3">
+    <button
+      type="button"
+      (click)="onCancel()"
+      [disabled]="loading"
+      mat-button
+      class="w-full sm:w-auto px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium disabled:opacity-50">
+      Cancel
+    </button>
+    
+    <button
+      type="submit"
+      [disabled]="transactionForm.invalid || loading"
+      mat-raised-button
+      color="primary"
+      class="w-full sm:w-auto px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium disabled:opacity-50 flex items-center justify-center gap-2"
+      (click)="onSubmit()">
+      @if (loading) {
+        <mat-spinner diameter="20" strokeWidth="3"></mat-spinner>
+      }
+      <span>{{ loading ? 'Creating...' : 'Create Transaction' }}</span>
+    </button>
+  </div>
+</div>

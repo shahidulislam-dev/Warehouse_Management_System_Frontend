@@ -1,0 +1,58 @@
+<div class="p-6 min-w-[90vw] md:min-w-[500px]">
+  <div class="flex items-center justify-between mb-6 pb-4 border-b border-gray-200">
+    <h2 class="text-2xl font-bold text-gray-800">
+      {{ isEdit ? 'Edit Event' : 'Add New Event' }}
+    </h2>
+    <button 
+      mat-icon-button 
+      (click)="onCancel()" 
+      class="text-gray-400 hover:text-gray-600"
+      [disabled]="loading">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <form [formGroup]="eventForm" (ngSubmit)="onSubmit()" class="space-y-6">
+    <div class="space-y-2">
+      <label class="block text-sm font-medium text-gray-700">Event Name *</label>
+      <mat-form-field appearance="outline" class="w-full">
+        <input matInput formControlName="eventName" placeholder="Enter event name">
+        @if (hasError('eventName', 'required')) {
+          <mat-error>Event name is required</mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <div class="space-y-2">
+      <label class="block text-sm font-medium text-gray-700">Event Date *</label>
+      <mat-form-field appearance="outline" class="w-full">
+        <input matInput type="datetime-local" formControlName="eventDate">
+        @if (hasError('eventDate', 'required')) {
+          <mat-error>Event date is required</mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <mat-checkbox formControlName="active">Active</mat-checkbox>
+    </div>
+  </form>
+</div>
+
+<div class="px-6 py-4 border-t border-gray-200 bg-gray-50 flex justify-end gap-3">
+  <button 
+    (click)="onCancel()" 
+    mat-button 
+    class="px-6 py-2 border border-gray-300 rounded-lg"
+    [disabled]="loading">
+    Cancel
+  </button>
+  <button 
+    (click)="onSubmit()" 
+    mat-raised-button 
+    color="primary"
+    class="px-6 py-2 bg-green-600 text-white rounded-lg"
+    [disabled]="eventForm.invalid || loading">
+    {{ loading ? 'Saving...' : (isEdit ? 'Update' : 'Create') }}
+  </button>
+</div>

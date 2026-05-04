@@ -1,12 +1,13 @@
 <!-- shared/layout/sidebar/sidebar.html -->
-<div [ngClass]="{
-  'translate-x-0 shadow-2xl': isOpen || !isMobile,
-  '-translate-x-full': !isOpen && isMobile,
-  'w-80': isOpen,
-  'w-20': !isOpen && !isMobile
-}"
-     class="fixed md:relative inset-y-0 left-0 z-40 bg-white shadow-xl transform transition-all duration-500 ease-in-out md:translate-x-0 border-r border-gray-200 h-full overflow-hidden">
-  
+<div
+  [ngClass]="{
+    'translate-x-0 shadow-2xl': isOpen || !isMobile,
+    '-translate-x-full': !isOpen && isMobile,
+    'w-80': isOpen,
+    'w-20': !isOpen && !isMobile,
+  }"
+  class="fixed md:relative inset-y-0 left-0 z-40 bg-white shadow-xl transform transition-all duration-500 ease-in-out md:translate-x-0 border-r border-gray-200 h-full overflow-hidden"
+>
   <div class="h-full flex flex-col">
     <!-- Sidebar Header - Mobile only -->
     <div class="p-6 border-b border-gray-200 md:hidden bg-green-800" *ngIf="isOpen">
@@ -43,7 +44,10 @@
     </div>
 
     <!-- Desktop Collapsed Header - Show only icons when collapsed -->
-    <div class="hidden md:block p-4 border-b border-gray-200 mt-4 bg-amber-300" *ngIf="!isOpen && !isMobile">
+    <div
+      class="hidden md:block p-4 border-b border-gray-200 mt-4 bg-amber-300"
+      *ngIf="!isOpen && !isMobile"
+    >
       <div class="flex items-center justify-center">
         <div class="w-10 h-10 rounded-xl flex items-center justify-center shadow-md bg-white">
           <mat-icon class="text-green-700 text-lg">inventory</mat-icon>
@@ -55,14 +59,18 @@
       <ul class="space-y-2">
         <!-- Dashboard -->
         <li>
-          <a [routerLink]="currentModule + '/dashboard'" 
-             routerLinkActive="bg-blue-100 text-blue-600 border-r-4 border-blue-600 shadow-md"
-             (click)="onMenuItemClick()"
-             class="flex items-center p-4 rounded-xl hover:bg-gray-100 hover:shadow-sm transition-all duration-300 group"
-             [class]="isOpen ? 'justify-start space-x-4' : 'justify-center'"
-             [matTooltip]="!isOpen && !isMobile ? 'Dashboard' : ''"
-             matTooltipPosition="right">
-            <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center group-hover:bg-blue-100 transition-colors flex-shrink-0">
+          <a
+            [routerLink]="currentModule + '/dashboard'"
+            routerLinkActive="bg-blue-100 text-blue-600 border-r-4 border-blue-600 shadow-md"
+            (click)="onMenuItemClick()"
+            class="flex items-center p-4 rounded-xl hover:bg-gray-100 hover:shadow-sm transition-all duration-300 group"
+            [class]="isOpen ? 'justify-start space-x-4' : 'justify-center'"
+            [matTooltip]="!isOpen && !isMobile ? 'Dashboard' : ''"
+            matTooltipPosition="right"
+          >
+            <div
+              class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center group-hover:bg-blue-100 transition-colors flex-shrink-0"
+            >
               <mat-icon class="text-blue-600 text-lg">dashboard</mat-icon>
             </div>
             @if (isOpen || isMobile) {
@@ -74,14 +82,18 @@
         <!-- User Management (Only for Admin/Super-Admin) -->
         @if (canSeeUserManagement()) {
           <li>
-            <a [routerLink]="currentModule + '/users'" 
-               routerLinkActive="bg-blue-100 text-blue-600 border-r-4 border-blue-600 shadow-md"
-               (click)="onMenuItemClick()"
-               class="flex items-center p-4 rounded-xl hover:bg-gray-100 hover:shadow-sm transition-all duration-300 group"
-               [class]="isOpen ? 'justify-start space-x-4' : 'justify-center'"
-               [matTooltip]="!isOpen && !isMobile ? 'User Management' : ''"
-               matTooltipPosition="right">
-              <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center group-hover:bg-blue-100 transition-colors flex-shrink-0">
+            <a
+              [routerLink]="currentModule + '/users'"
+              routerLinkActive="bg-blue-100 text-blue-600 border-r-4 border-blue-600 shadow-md"
+              (click)="onMenuItemClick()"
+              class="flex items-center p-4 rounded-xl hover:bg-gray-100 hover:shadow-sm transition-all duration-300 group"
+              [class]="isOpen ? 'justify-start space-x-4' : 'justify-center'"
+              [matTooltip]="!isOpen && !isMobile ? 'User Management' : ''"
+              matTooltipPosition="right"
+            >
+              <div
+                class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center group-hover:bg-blue-100 transition-colors flex-shrink-0"
+              >
                 <mat-icon class="text-blue-600 text-lg">people</mat-icon>
               </div>
               @if (isOpen || isMobile) {
@@ -93,14 +105,18 @@
 
         <!-- Warehouses (All roles) -->
         <li>
-          <a [routerLink]="currentModule + '/warehouses'" 
-             routerLinkActive="bg-green-100 text-green-600 border-r-4 border-green-600 shadow-md"
-             (click)="onMenuItemClick()"
-             class="flex items-center p-4 rounded-xl hover:bg-gray-100 hover:shadow-sm transition-all duration-300 group"
-             [class]="isOpen ? 'justify-start space-x-4' : 'justify-center'"
-             [matTooltip]="!isOpen && !isMobile ? 'Warehouses' : ''"
-             matTooltipPosition="right">
-            <div class="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center group-hover:bg-green-100 transition-colors flex-shrink-0">
+          <a
+            [routerLink]="currentModule + '/warehouses'"
+            routerLinkActive="bg-green-100 text-green-600 border-r-4 border-green-600 shadow-md"
+            (click)="onMenuItemClick()"
+            class="flex items-center p-4 rounded-xl hover:bg-gray-100 hover:shadow-sm transition-all duration-300 group"
+            [class]="isOpen ? 'justify-start space-x-4' : 'justify-center'"
+            [matTooltip]="!isOpen && !isMobile ? 'Warehouses' : ''"
+            matTooltipPosition="right"
+          >
+            <div
+              class="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center group-hover:bg-green-100 transition-colors flex-shrink-0"
+            >
               <mat-icon class="text-green-600 text-lg">warehouse</mat-icon>
             </div>
             @if (isOpen || isMobile) {
@@ -111,14 +127,18 @@
 
         <!-- Floors (All roles) -->
         <li>
-          <a [routerLink]="currentModule + '/floors'" 
-             routerLinkActive="bg-blue-100 text-blue-600 border-r-4 border-blue-600 shadow-md"
-             (click)="onMenuItemClick()"
-             class="flex items-center p-4 rounded-xl hover:bg-gray-100 hover:shadow-sm transition-all duration-300 group"
-             [class]="isOpen ? 'justify-start space-x-4' : 'justify-center'"
-             [matTooltip]="!isOpen && !isMobile ? 'Floors' : ''"
-             matTooltipPosition="right">
-            <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center group-hover:bg-blue-100 transition-colors flex-shrink-0">
+          <a
+            [routerLink]="currentModule + '/floors'"
+            routerLinkActive="bg-blue-100 text-blue-600 border-r-4 border-blue-600 shadow-md"
+            (click)="onMenuItemClick()"
+            class="flex items-center p-4 rounded-xl hover:bg-gray-100 hover:shadow-sm transition-all duration-300 group"
+            [class]="isOpen ? 'justify-start space-x-4' : 'justify-center'"
+            [matTooltip]="!isOpen && !isMobile ? 'Floors' : ''"
+            matTooltipPosition="right"
+          >
+            <div
+              class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center group-hover:bg-blue-100 transition-colors flex-shrink-0"
+            >
               <mat-icon class="text-blue-600 text-lg">layers</mat-icon>
             </div>
             @if (isOpen || isMobile) {
@@ -129,14 +149,18 @@
 
         <!-- Rooms (All roles) -->
         <li>
-          <a [routerLink]="currentModule + '/rooms'" 
-             routerLinkActive="bg-blue-100 text-blue-600 border-r-4 border-blue-600 shadow-md"
-             (click)="onMenuItemClick()"
-             class="flex items-center p-4 rounded-xl hover:bg-gray-100 hover:shadow-sm transition-all duration-300 group"
-             [class]="isOpen ? 'justify-start space-x-4' : 'justify-center'"
-             [matTooltip]="!isOpen && !isMobile ? 'Rooms' : ''"
-             matTooltipPosition="right">
-            <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center group-hover:bg-blue-100 transition-colors flex-shrink-0">
+          <a
+            [routerLink]="currentModule + '/rooms'"
+            routerLinkActive="bg-blue-100 text-blue-600 border-r-4 border-blue-600 shadow-md"
+            (click)="onMenuItemClick()"
+            class="flex items-center p-4 rounded-xl hover:bg-gray-100 hover:shadow-sm transition-all duration-300 group"
+            [class]="isOpen ? 'justify-start space-x-4' : 'justify-center'"
+            [matTooltip]="!isOpen && !isMobile ? 'Rooms' : ''"
+            matTooltipPosition="right"
+          >
+            <div
+              class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center group-hover:bg-blue-100 transition-colors flex-shrink-0"
+            >
               <mat-icon class="text-blue-600 text-lg">room_preferences</mat-icon>
             </div>
             @if (isOpen || isMobile) {
@@ -147,14 +171,18 @@
 
         <!-- Category (All roles) -->
         <li>
-          <a [routerLink]="currentModule + '/goods-category'" 
-             routerLinkActive="bg-blue-100 text-blue-600 border-r-4 border-blue-600 shadow-md"
-             (click)="onMenuItemClick()"
-             class="flex items-center p-4 rounded-xl hover:bg-gray-100 hover:shadow-sm transition-all duration-300 group"
-             [class]="isOpen ? 'justify-start space-x-4' : 'justify-center'"
-             [matTooltip]="!isOpen && !isMobile ? 'Category' : ''"
-             matTooltipPosition="right">
-            <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center group-hover:bg-blue-100 transition-colors flex-shrink-0">
+          <a
+            [routerLink]="currentModule + '/goods-category'"
+            routerLinkActive="bg-blue-100 text-blue-600 border-r-4 border-blue-600 shadow-md"
+            (click)="onMenuItemClick()"
+            class="flex items-center p-4 rounded-xl hover:bg-gray-100 hover:shadow-sm transition-all duration-300 group"
+            [class]="isOpen ? 'justify-start space-x-4' : 'justify-center'"
+            [matTooltip]="!isOpen && !isMobile ? 'Category' : ''"
+            matTooltipPosition="right"
+          >
+            <div
+              class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center group-hover:bg-blue-100 transition-colors flex-shrink-0"
+            >
               <mat-icon class="text-blue-600 text-lg">category</mat-icon>
             </div>
             @if (isOpen || isMobile) {
@@ -165,14 +193,18 @@
 
         <!-- Goods (All roles) -->
         <li>
-          <a [routerLink]="currentModule + '/goods'" 
-             routerLinkActive="bg-blue-100 text-blue-600 border-r-4 border-blue-600 shadow-md"
-             (click)="onMenuItemClick()"
-             class="flex items-center p-4 rounded-xl hover:bg-gray-100 hover:shadow-sm transition-all duration-300 group"
-             [class]="isOpen ? 'justify-start space-x-4' : 'justify-center'"
-             [matTooltip]="!isOpen && !isMobile ? 'Goods' : ''"
-             matTooltipPosition="right">
-            <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center group-hover:bg-blue-100 transition-colors flex-shrink-0">
+          <a
+            [routerLink]="currentModule + '/goods'"
+            routerLinkActive="bg-blue-100 text-blue-600 border-r-4 border-blue-600 shadow-md"
+            (click)="onMenuItemClick()"
+            class="flex items-center p-4 rounded-xl hover:bg-gray-100 hover:shadow-sm transition-all duration-300 group"
+            [class]="isOpen ? 'justify-start space-x-4' : 'justify-center'"
+            [matTooltip]="!isOpen && !isMobile ? 'Goods' : ''"
+            matTooltipPosition="right"
+          >
+            <div
+              class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center group-hover:bg-blue-100 transition-colors flex-shrink-0"
+            >
               <mat-icon class="text-blue-600 text-lg">inventory</mat-icon>
             </div>
             @if (isOpen || isMobile) {
@@ -180,22 +212,78 @@
             }
           </a>
         </li>
+        <!-- Events -->
+        <li>
+          <a
+            [routerLink]="currentModule + '/events'"
+            routerLinkActive="bg-orange-100 text-orange-600 border-r-4 border-orange-600 shadow-md"
+            (click)="onMenuItemClick()"
+            class="flex items-center p-4 rounded-xl hover:bg-gray-100"
+          >
+            <div class="w-10 h-10 bg-orange-50 rounded-lg flex items-center justify-center">
+              <mat-icon class="text-orange-600 text-lg">event</mat-icon>
+            </div>
+            @if (isOpen || isMobile) {
+              <span class="font-semibold text-sm md:text-lg ml-4">Events</span>
+            }
+          </a>
+        </li>
+
+        <!-- Departments -->
+        <li>
+          <a
+            [routerLink]="currentModule + '/departments'"
+            routerLinkActive="bg-teal-100 text-teal-600 border-r-4 border-teal-600 shadow-md"
+            (click)="onMenuItemClick()"
+            class="flex items-center p-4 rounded-xl hover:bg-gray-100"
+          >
+            <div class="w-10 h-10 bg-teal-50 rounded-lg flex items-center justify-center">
+              <mat-icon class="text-teal-600 text-lg">business</mat-icon>
+            </div>
+            @if (isOpen || isMobile) {
+              <span class="font-semibold text-sm md:text-lg ml-4">Departments</span>
+            }
+          </a>
+        </li>
+
+        <!-- Transactions -->
+        <li>
+          <a
+            [routerLink]="currentModule + '/transactions'"
+            routerLinkActive="bg-indigo-100 text-indigo-600 border-r-4 border-indigo-600 shadow-md"
+            (click)="onMenuItemClick()"
+            class="flex items-center p-4 rounded-xl hover:bg-gray-100"
+          >
+            <div class="w-10 h-10 bg-indigo-50 rounded-lg flex items-center justify-center">
+              <mat-icon class="text-indigo-600 text-lg">receipt_long</mat-icon>
+            </div>
+            @if (isOpen || isMobile) {
+              <span class="font-semibold text-sm md:text-lg ml-4">Transactions</span>
+            }
+          </a>
+        </li>
 
         <!-- Super Admin Only Features -->
         @if (canSeeSuperAdminFeatures()) {
           <li class="pt-6 mt-6 border-t border-gray-200" *ngIf="isOpen || isMobile">
-            <p class="px-4 text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Super Admin</p>
+            <p class="px-4 text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">
+              Super Admin
+            </p>
           </li>
-          
+
           <li>
-            <a [routerLink]="currentModule + '/create-super-admin'" 
-               routerLinkActive="bg-purple-100 text-purple-600 border-r-4 border-purple-600 shadow-md"
-               (click)="onMenuItemClick()"
-               class="flex items-center p-4 rounded-xl hover:bg-gray-100 hover:shadow-sm transition-all duration-300 group"
-               [class]="isOpen ? 'justify-start space-x-4' : 'justify-center'"
-               [matTooltip]="!isOpen && !isMobile ? 'Add Super Admin' : ''"
-               matTooltipPosition="right">
-              <div class="w-10 h-10 bg-purple-50 rounded-lg flex items-center justify-center group-hover:bg-purple-100 transition-colors flex-shrink-0">
+            <a
+              [routerLink]="currentModule + '/create-super-admin'"
+              routerLinkActive="bg-purple-100 text-purple-600 border-r-4 border-purple-600 shadow-md"
+              (click)="onMenuItemClick()"
+              class="flex items-center p-4 rounded-xl hover:bg-gray-100 hover:shadow-sm transition-all duration-300 group"
+              [class]="isOpen ? 'justify-start space-x-4' : 'justify-center'"
+              [matTooltip]="!isOpen && !isMobile ? 'Add Super Admin' : ''"
+              matTooltipPosition="right"
+            >
+              <div
+                class="w-10 h-10 bg-purple-50 rounded-lg flex items-center justify-center group-hover:bg-purple-100 transition-colors flex-shrink-0"
+              >
                 <mat-icon class="text-purple-600 text-lg">admin_panel_settings</mat-icon>
               </div>
               @if (isOpen || isMobile) {
@@ -219,6 +307,8 @@
 
 <!-- Overlay for mobile -->
 @if (isOpen && isMobile) {
-  <div (click)="onToggleSidebar()"
-       class="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm z-30 transition-all duration-300"></div>
+  <div
+    (click)="onToggleSidebar()"
+    class="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm z-30 transition-all duration-300"
+  ></div>
 }

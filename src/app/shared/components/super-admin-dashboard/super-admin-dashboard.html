@@ -1,6 +1,5 @@
 <!-- shared/components/dashboard/dashboard.html -->
 <main class="flex-1 p-0 md:p-6 lg:p-8">
-  <!-- max-w-7xl mx-auto -->
   <div class="">
     <!-- Dynamic Header Based on Role -->
     <div class="flex justify-between items-center mb-8">
@@ -19,136 +18,289 @@
         <span>Refresh</span>
       </button>
     </div>
+
+    <!-- Loading State -->
+    @if (isLoading) {
+      <div class="flex justify-center items-center h-64">
+        <mat-spinner diameter="40"></mat-spinner>
+      </div>
+    }
     
     <!-- Statistics Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-      <!-- Total Users Card (Only for Admin/Super-Admin) -->
-      @if (authService.canManageUsers()) {
-        <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500 hover:shadow-xl transition-shadow">
+    @if (!isLoading) {
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        
+        <!-- Total Users Card (Only for Admin/Super-Admin) -->
+        @if (authService.canManageUsers()) {
+          <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500 hover:shadow-xl transition-shadow">
+            <div class="flex items-center">
+              <div class="p-3 rounded-full bg-blue-100 text-blue-600 mr-4">
+                <mat-icon>people</mat-icon>
+              </div>
+              <div>
+                <p class="text-2xl font-bold text-gray-900">{{ userCount }}</p>
+                <p class="text-gray-600">Total Users</p>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- Warehouses Card -->
+        <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500 hover:shadow-xl transition-shadow">
           <div class="flex items-center">
-            <div class="p-3 rounded-full bg-blue-100 text-blue-600 mr-4">
-              <mat-icon>people</mat-icon>
+            <div class="p-3 rounded-full bg-green-100 text-green-600 mr-4">
+              <mat-icon>warehouse</mat-icon>
             </div>
             <div>
-              <p class="text-2xl font-bold text-gray-900">{{ userCount }}</p>
-              <p class="text-gray-600">Total Users</p>
+              <p class="text-2xl font-bold text-gray-900">{{ warehouseCount }}</p>
+              <p class="text-gray-600">Warehouses</p>
             </div>
           </div>
         </div>
-      }
 
-      <!-- Warehouses Card (All Roles) -->
-      <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500 hover:shadow-xl transition-shadow">
-        <div class="flex items-center">
-          <div class="p-3 rounded-full bg-green-100 text-green-600 mr-4">
-            <mat-icon>warehouse</mat-icon>
-          </div>
-          <div>
-            <p class="text-2xl font-bold text-gray-900">{{ warehouseCount }}</p>
-            <p class="text-gray-600">Warehouses</p>
+        <!-- Floors Card -->
+        <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-cyan-500 hover:shadow-xl transition-shadow">
+          <div class="flex items-center">
+            <div class="p-3 rounded-full bg-cyan-100 text-cyan-600 mr-4">
+              <mat-icon>layers</mat-icon>
+            </div>
+            <div>
+              <p class="text-2xl font-bold text-gray-900">{{ floorCount }}</p>
+              <p class="text-gray-600">Floors</p>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- Pending Approvals Card (Only for Admin/Super-Admin) -->
-      @if (authService.canManageUsers()) {
+        <!-- Rooms Card -->
+        <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-sky-500 hover:shadow-xl transition-shadow">
+          <div class="flex items-center">
+            <div class="p-3 rounded-full bg-sky-100 text-sky-600 mr-4">
+              <mat-icon>room_preferences</mat-icon>
+            </div>
+            <div>
+              <p class="text-2xl font-bold text-gray-900">{{ roomCount }}</p>
+              <p class="text-gray-600">Rooms</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Goods Card -->
+        <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-purple-500 hover:shadow-xl transition-shadow">
+          <div class="flex items-center">
+            <div class="p-3 rounded-full bg-purple-100 text-purple-600 mr-4">
+              <mat-icon>inventory</mat-icon>
+            </div>
+            <div>
+              <p class="text-2xl font-bold text-gray-900">{{ goodsCount }}</p>
+              <p class="text-gray-600">Goods</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Events Card -->
         <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-orange-500 hover:shadow-xl transition-shadow">
           <div class="flex items-center">
             <div class="p-3 rounded-full bg-orange-100 text-orange-600 mr-4">
-              <mat-icon>pending_actions</mat-icon>
+              <mat-icon>event</mat-icon>
             </div>
             <div>
-              <p class="text-2xl font-bold text-gray-900">{{ pendingApprovals }}</p>
-              <p class="text-gray-600">Pending Approvals</p>
+              <p class="text-2xl font-bold text-gray-900">{{ eventCount }}</p>
+              <p class="text-gray-600">Events</p>
             </div>
           </div>
         </div>
-      }
 
-      <!-- Role Card -->
-      <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-red-500 hover:shadow-xl transition-shadow">
-        <div class="flex items-center">
-          <div class="p-3 rounded-full bg-red-100 text-red-600 mr-4">
-            <mat-icon>admin_panel_settings</mat-icon>
+        <!-- Departments Card -->
+        <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-teal-500 hover:shadow-xl transition-shadow">
+          <div class="flex items-center">
+            <div class="p-3 rounded-full bg-teal-100 text-teal-600 mr-4">
+              <mat-icon>business</mat-icon>
+            </div>
+            <div>
+              <p class="text-2xl font-bold text-gray-900">{{ departmentCount }}</p>
+              <p class="text-gray-600">Departments</p>
+            </div>
           </div>
-          <div>
-            <p class="text-2xl font-bold text-gray-900">
-              @if (authService.isSuperAdmin()) { Super }
-              @else if (authService.isAdmin()) { Admin }
-              @else { Staff }
-            </p>
-            <p class="text-gray-600">Role</p>
+        </div>
+
+        <!-- Transactions Card -->
+        <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-indigo-500 hover:shadow-xl transition-shadow">
+          <div class="flex items-center">
+            <div class="p-3 rounded-full bg-indigo-100 text-indigo-600 mr-4">
+              <mat-icon>receipt_long</mat-icon>
+            </div>
+            <div>
+              <p class="text-2xl font-bold text-gray-900">{{ transactionCount }}</p>
+              <p class="text-gray-600">Transactions</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pending Approvals Card (Only for Admin/Super-Admin) -->
+        @if (authService.canManageUsers()) {
+          <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-red-500 hover:shadow-xl transition-shadow">
+            <div class="flex items-center">
+              <div class="p-3 rounded-full bg-red-100 text-red-600 mr-4">
+                <mat-icon>pending_actions</mat-icon>
+              </div>
+              <div>
+                <p class="text-2xl font-bold text-gray-900">{{ pendingApprovals }}</p>
+                <p class="text-gray-600">Pending Approvals</p>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- Role Card -->
+        <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-pink-500 hover:shadow-xl transition-shadow">
+          <div class="flex items-center">
+            <div class="p-3 rounded-full bg-pink-100 text-pink-600 mr-4">
+              <mat-icon>admin_panel_settings</mat-icon>
+            </div>
+            <div>
+              <p class="text-lg font-bold text-gray-900">
+                @if (authService.isSuperAdmin()) { Super Admin }
+                @else if (authService.isAdmin()) { Admin }
+                @else { Staff }
+              </p>
+              <p class="text-gray-600">Your Role</p>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    }
 
     <!-- Quick Actions -->
-    <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
-      <h2 class="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <!-- Manage Users (Only for Admin/Super-Admin) -->
-        @if (authService.canManageUsers()) {
+    @if (!isLoading) {
+      <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          
+          <!-- Manage Users (Only for Admin/Super-Admin) -->
+          @if (authService.canManageUsers()) {
+            <button 
+              [routerLink]="getDashboardRoute() + '/users'" 
+              class="flex flex-col items-center justify-center p-6 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors group">
+              <mat-icon class="w-12 h-12 text-blue-600 mb-3 group-hover:scale-110 transition-transform">people</mat-icon>
+              <span class="font-semibold text-gray-900">Manage Users</span>
+            </button>
+          }
+          
+          <!-- Manage Warehouses -->
           <button 
-            [routerLink]="getDashboardRoute() + '/users'" 
-            class="flex flex-col items-center justify-center p-6 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors group">
-            <mat-icon class="w-12 h-12 text-blue-600 mb-3 group-hover:scale-110 transition-transform">people</mat-icon>
-            <span class="font-semibold text-gray-900">Manage Users</span>
+            [routerLink]="getDashboardRoute() + '/warehouses'"
+            class="flex flex-col items-center justify-center p-6 bg-green-50 rounded-lg hover:bg-green-100 transition-colors group">
+            <mat-icon class="w-12 h-12 text-green-600 mb-3 group-hover:scale-110 transition-transform">warehouse</mat-icon>
+            <span class="font-semibold text-gray-900">Warehouses</span>
           </button>
-        }
-        
-        <!-- Manage Warehouses (All Roles) -->
-        <button 
-          [routerLink]="getDashboardRoute() + '/warehouses'"
-          class="flex flex-col items-center justify-center p-6 bg-green-50 rounded-lg hover:bg-green-100 transition-colors group">
-          <mat-icon class="w-12 h-12 text-green-600 mb-3 group-hover:scale-110 transition-transform">warehouse</mat-icon>
-          <span class="font-semibold text-gray-900">Manage Warehouses</span>
-        </button>
 
-        <!-- Manage Goods (All Roles) -->
-        <button 
-          [routerLink]="getDashboardRoute() + '/goods'"
-          class="flex flex-col items-center justify-center p-6 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors group">
-          <mat-icon class="w-12 h-12 text-purple-600 mb-3 group-hover:scale-110 transition-transform">inventory</mat-icon>
-          <span class="font-semibold text-gray-900">Manage Goods</span>
-        </button>
-        
-        <!-- Add Super Admin (Only for Super-Admin) -->
-        @if (authService.canManageSuperAdmins()) {
+          <!-- Manage Floors -->
           <button 
-            [routerLink]="getDashboardRoute() + '/create-super-admin'"
-            class="flex flex-col items-center justify-center p-6 bg-red-50 rounded-lg hover:bg-red-100 transition-colors group">
-            <mat-icon class="w-12 h-12 text-red-600 mb-3 group-hover:scale-110 transition-transform">add_moderator</mat-icon>
-            <span class="font-semibold text-gray-900">Add Super Admin</span>
+            [routerLink]="getDashboardRoute() + '/floors'"
+            class="flex flex-col items-center justify-center p-6 bg-cyan-50 rounded-lg hover:bg-cyan-100 transition-colors group">
+            <mat-icon class="w-12 h-12 text-cyan-600 mb-3 group-hover:scale-110 transition-transform">layers</mat-icon>
+            <span class="font-semibold text-gray-900">Floors</span>
           </button>
-        }
+
+          <!-- Manage Rooms -->
+          <button 
+            [routerLink]="getDashboardRoute() + '/rooms'"
+            class="flex flex-col items-center justify-center p-6 bg-sky-50 rounded-lg hover:bg-sky-100 transition-colors group">
+            <mat-icon class="w-12 h-12 text-sky-600 mb-3 group-hover:scale-110 transition-transform">room_preferences</mat-icon>
+            <span class="font-semibold text-gray-900">Rooms</span>
+          </button>
+
+          <!-- Manage Goods -->
+          <button 
+            [routerLink]="getDashboardRoute() + '/goods'"
+            class="flex flex-col items-center justify-center p-6 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors group">
+            <mat-icon class="w-12 h-12 text-purple-600 mb-3 group-hover:scale-110 transition-transform">inventory</mat-icon>
+            <span class="font-semibold text-gray-900">Goods</span>
+          </button>
+
+          <!-- Manage Events -->
+          <button 
+            [routerLink]="getDashboardRoute() + '/events'"
+            class="flex flex-col items-center justify-center p-6 bg-orange-50 rounded-lg hover:bg-orange-100 transition-colors group">
+            <mat-icon class="w-12 h-12 text-orange-600 mb-3 group-hover:scale-110 transition-transform">event</mat-icon>
+            <span class="font-semibold text-gray-900">Events</span>
+          </button>
+
+          <!-- Manage Departments -->
+          <button 
+            [routerLink]="getDashboardRoute() + '/departments'"
+            class="flex flex-col items-center justify-center p-6 bg-teal-50 rounded-lg hover:bg-teal-100 transition-colors group">
+            <mat-icon class="w-12 h-12 text-teal-600 mb-3 group-hover:scale-110 transition-transform">business</mat-icon>
+            <span class="font-semibold text-gray-900">Departments</span>
+          </button>
+
+          <!-- Manage Transactions -->
+          <button 
+            [routerLink]="getDashboardRoute() + '/transactions'"
+            class="flex flex-col items-center justify-center p-6 bg-indigo-50 rounded-lg hover:bg-indigo-100 transition-colors group">
+            <mat-icon class="w-12 h-12 text-indigo-600 mb-3 group-hover:scale-110 transition-transform">receipt_long</mat-icon>
+            <span class="font-semibold text-gray-900">Transactions</span>
+          </button>
+          
+          <!-- Add Super Admin (Only for Super-Admin) -->
+          @if (authService.canManageSuperAdmins()) {
+            <button 
+              [routerLink]="getDashboardRoute() + '/create-super-admin'"
+              class="flex flex-col items-center justify-center p-6 bg-red-50 rounded-lg hover:bg-red-100 transition-colors group">
+              <mat-icon class="w-12 h-12 text-red-600 mb-3 group-hover:scale-110 transition-transform">add_moderator</mat-icon>
+              <span class="font-semibold text-gray-900">Add Super Admin</span>
+            </button>
+          }
+        </div>
       </div>
-    </div>
+    }
 
     <!-- Recent Activity -->
-    <div class="bg-white rounded-xl shadow-lg p-6">
-      <h2 class="text-xl font-semibold text-gray-900 mb-4">Recent Activity</h2>
-      <div class="space-y-4">
-        <div class="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg">
-          <div class="p-2 bg-blue-100 rounded-full">
-            <mat-icon class="w-5 h-5 text-blue-600">people</mat-icon>
+    @if (!isLoading) {
+      <div class="bg-white rounded-xl shadow-lg p-6">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">Recent Activity</h2>
+        <div class="space-y-4">
+          <div class="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg">
+            <div class="p-2 bg-blue-100 rounded-full">
+              <mat-icon class="w-5 h-5 text-blue-600">inventory</mat-icon>
+            </div>
+            <div>
+              <p class="font-medium text-gray-900">Total Goods: {{ goodsCount }}</p>
+              <p class="text-sm text-gray-600">Across all warehouses</p>
+            </div>
           </div>
-          <div>
-            <p class="font-medium text-gray-900">System is running smoothly</p>
-            <p class="text-sm text-gray-600">Just now</p>
+          
+          <div class="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg">
+            <div class="p-2 bg-indigo-100 rounded-full">
+              <mat-icon class="w-5 h-5 text-indigo-600">receipt_long</mat-icon>
+            </div>
+            <div>
+              <p class="font-medium text-gray-900">Total Transactions: {{ transactionCount }}</p>
+              <p class="text-sm text-gray-600">All time transactions</p>
+            </div>
           </div>
-        </div>
-        
-        <div class="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg">
-          <div class="p-2 bg-green-100 rounded-full">
-            <mat-icon class="w-5 h-5 text-green-600">warehouse</mat-icon>
+
+          <div class="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg">
+            <div class="p-2 bg-orange-100 rounded-full">
+              <mat-icon class="w-5 h-5 text-orange-600">event</mat-icon>
+            </div>
+            <div>
+              <p class="font-medium text-gray-900">Active Events: {{ eventCount }}</p>
+              <p class="text-sm text-gray-600">Events in the system</p>
+            </div>
           </div>
-          <div>
-            <p class="font-medium text-gray-900">Welcome to Warehouse Management System</p>
-            <p class="text-sm text-gray-600">Today</p>
+
+          <div class="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg">
+            <div class="p-2 bg-green-100 rounded-full">
+              <mat-icon class="w-5 h-5 text-green-600">warehouse</mat-icon>
+            </div>
+            <div>
+              <p class="font-medium text-gray-900">System Overview</p>
+              <p class="text-sm text-gray-600">{{ warehouseCount }} Warehouses | {{ floorCount }} Floors | {{ roomCount }} Rooms</p>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    }
   </div>
 </main>
