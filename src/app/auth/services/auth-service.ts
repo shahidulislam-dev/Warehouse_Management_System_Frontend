@@ -27,25 +27,24 @@ export class AuthService {
     this.loadUserRoleFromToken();
   }
 
-
-  signup(data: any): Observable<any> { 
+  signup(data: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/signup`, data);
   }
-  
-  login(data: any): Observable<any> { 
+
+  login(data: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/login`, data);
   }
-  
-  getAllUsers(): Observable<any> { 
-    return this.http.get(`${this.apiUrl}/get`); 
+
+  getAllUsers(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/get`);
   }
-  
-  changePassword(data: any): Observable<any> { 
-    return this.http.post(`${this.apiUrl}/changePassword`, data); 
+
+  changePassword(data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/changePassword`, data);
   }
-  
-  forgotPassword(data: any): Observable<any> { 
-    return this.http.post(`${this.apiUrl}/forgotPassword`, data); 
+
+  forgotPassword(data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/forgotPassword`, data);
   }
 
   getCurrentUser(): CurrentUser | null {
@@ -57,25 +56,29 @@ export class AuthService {
   }
 
   updateUserStatus(userId: number, status: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/update`, {
-      id: userId.toString(),
-      status: status
-    }, {
-      headers: this.getAuthHeaders()
-    });
+    return this.http.post(
+      `${this.apiUrl}/update`,
+      {
+        id: userId.toString(),
+        status: status,
+      },
+      {
+        headers: this.getAuthHeaders(),
+      },
+    );
   }
 
   createSuperAdmin(data: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/create/super/admin`, data, {
-      headers: this.getAuthHeaders()
+      headers: this.getAuthHeaders(),
     });
   }
 
   getAuthHeaders(): HttpHeaders {
     const token = localStorage.getItem('token');
     return new HttpHeaders({
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
     });
   }
 
@@ -129,7 +132,6 @@ export class AuthService {
     return role === 'admin' || role === 'super-admin';
   }
 
-
   isStaff(): boolean {
     const role = this.getCurrentUserRole();
     return role === 'staff' || role === 'admin' || role === 'super-admin';
@@ -147,11 +149,16 @@ export class AuthService {
     return this.isAdmin() || this.isSuperAdmin();
   }
 
-
   canEditEntities(): boolean {
     return this.isAuthenticated();
   }
+  canManageTransactions(): boolean {
+    return this.isStaff();
+  }
 
+  canDeleteTransactions(): boolean {
+    return this.isStaff();
+  }
   /**
    * Check if user can change a specific user's role
    * @param targetUserRole The role of the user being modified
@@ -159,20 +166,20 @@ export class AuthService {
   canChangeUserRole(targetUserRole: string): boolean {
     const currentRole = this.getCurrentUserRole();
     const currentUser = this.getCurrentUser();
-    
+
     // Prevent self-role-change
     if (currentUser && targetUserRole === currentUser.role) {
       return false;
     }
-    
+
     if (currentRole === 'super-admin') {
       return true; // Super-admin can change any role except their own
     }
-    
+
     if (currentRole === 'admin') {
       return targetUserRole === 'staff'; // Admin can only change staff roles
     }
-    
+
     return false;
   }
 
@@ -182,15 +189,15 @@ export class AuthService {
    */
   canViewUser(targetUserRole: string): boolean {
     const currentRole = this.getCurrentUserRole();
-    
+
     if (currentRole === 'super-admin') {
       return true; // Super-admin can see all users
     }
-    
+
     if (currentRole === 'admin') {
       return true; // Admin can see all except super-admins
     }
-    
+
     return false; // Staff cannot see any user management
   }
 
@@ -200,14 +207,17 @@ export class AuthService {
   getDashboardRoute(): string {
     const role = this.getCurrentUserRole();
     switch (role) {
-      case 'super-admin': return '/super-admin';
-      case 'admin': return '/admin';
-      case 'staff': return '/user';
-      default: return '/auth/login';
+      case 'super-admin':
+        return '/super-admin';
+      case 'admin':
+        return '/admin';
+      case 'staff':
+        return '/user';
+      default:
+        return '/auth/login';
     }
   }
 
-  
   getModuleBasePath(): string {
     return this.getDashboardRoute();
   }
@@ -218,19 +228,19 @@ export class AuthService {
    */
   hasAccessToFeature(feature: string): boolean {
     const role = this.getCurrentUserRole();
-    
+
     const featureAccess: { [key: string]: string[] } = {
-      'user_management': ['admin', 'super-admin'],
-      'super_admin_management': ['super-admin'],
-      'delete_operations': ['admin', 'super-admin'],
-      'warehouse_management': ['staff', 'admin', 'super-admin'],
-      'floor_management': ['staff', 'admin', 'super-admin'],
-      'room_management': ['staff', 'admin', 'super-admin'],
-      'goods_management': ['staff', 'admin', 'super-admin'],
-      'category_management': ['staff', 'admin', 'super-admin'],
-      'event_management': ['staff', 'admin', 'super-admin'],
-      'department_management': ['staff', 'admin', 'super-admin'],
-      'transaction_management': ['staff', 'admin', 'super-admin'],
+      user_management: ['admin', 'super-admin'],
+      super_admin_management: ['super-admin'],
+      delete_operations: ['admin', 'super-admin'],
+      warehouse_management: ['staff', 'admin', 'super-admin'],
+      floor_management: ['staff', 'admin', 'super-admin'],
+      room_management: ['staff', 'admin', 'super-admin'],
+      goods_management: ['staff', 'admin', 'super-admin'],
+      category_management: ['staff', 'admin', 'super-admin'],
+      event_management: ['staff', 'admin', 'super-admin'],
+      department_management: ['staff', 'admin', 'super-admin'],
+      transaction_management: ['staff', 'admin', 'super-admin'],
     };
 
     return featureAccess[feature]?.includes(role) || false;
@@ -271,20 +281,22 @@ export class AuthService {
   getRoleDisplayName(): string {
     const role = this.getCurrentUserRole();
     switch (role) {
-      case 'super-admin': return 'Super Admin';
-      case 'admin': return 'Admin';
-      case 'staff': return 'Staff';
-      default: return 'User';
+      case 'super-admin':
+        return 'Super Admin';
+      case 'admin':
+        return 'Admin';
+      case 'staff':
+        return 'Staff';
+      default:
+        return 'User';
     }
   }
 
-  
   getUserInitials(): string {
     const user = this.getCurrentUser();
     return user?.email?.charAt(0).toUpperCase() || 'U';
   }
 
-  
   isTokenExpiringSoon(): boolean {
     const token = localStorage.getItem('token');
     if (!token) return false;
@@ -292,11 +304,10 @@ export class AuthService {
     const decoded = this.decodeToken(token);
     if (!decoded) return false;
 
-    const expiresIn = (decoded.exp * 1000) - Date.now();
-    return expiresIn < 5 * 60 * 1000; 
+    const expiresIn = decoded.exp * 1000 - Date.now();
+    return expiresIn < 5 * 60 * 1000;
   }
 
- 
   getTokenExpirationTime(): Date | null {
     const token = localStorage.getItem('token');
     if (!token) return null;

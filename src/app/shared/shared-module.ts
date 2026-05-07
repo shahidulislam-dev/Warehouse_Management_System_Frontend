@@ -29,6 +29,8 @@ import { DepartmentsManagement } from './components/departments-management/depar
 import { CreateDepartments } from './components/departments-management/create-departments/create-departments';
 import { TransactionsManagement } from './components/transactions-management/transactions-management';
 import { CreateTransactions } from './components/transactions-management/create-transactions/create-transactions';
+import { ReturnTransactionDialog } from './components/transactions-management/return-transaction-dialog/return-transaction-dialog';
+import { TransactionItemsDialog } from './components/transactions-management/transaction-items-dialog/transaction-items-dialog';
 
 
 
@@ -62,7 +64,9 @@ import { CreateTransactions } from './components/transactions-management/create-
     DepartmentsManagement,
     CreateDepartments,
     TransactionsManagement,
-    CreateTransactions
+    CreateTransactions,
+    ReturnTransactionDialog,
+    TransactionItemsDialog
   ],
   imports: [
     CommonModule,

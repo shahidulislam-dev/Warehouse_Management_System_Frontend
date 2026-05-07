@@ -1,0 +1,59 @@
+<!-- return-transaction-dialog/return-transaction-dialog.html -->
+<div class="p-6 min-w-[90vw] md:min-w-[600px] max-h-[90vh] overflow-y-auto">
+  <div class="flex items-center justify-between mb-6 pb-4 border-b border-gray-200">
+    <h2 class="text-2xl font-bold text-gray-800">Return Materials</h2>
+    <button mat-icon-button (click)="onCancel()" class="text-gray-400 hover:text-gray-600" [disabled]="loading">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- Transaction Info -->
+  <div class="mb-4 p-4 bg-gray-50 rounded-lg">
+    <div class="grid grid-cols-2 gap-2 text-sm">
+      <span class="text-gray-500">Transaction ID:</span>
+      <span class="font-medium">#{{ transaction.id }}</span>
+      <span class="text-gray-500">Type:</span>
+      <span class="font-medium">{{ transaction.transactionCategory }}</span>
+      <span class="text-gray-500">Receiver:</span>
+      <span class="font-medium">{{ transaction.receiverName || transaction.eventReceiverName }}</span>
+      <span class="text-gray-500">Issue Date:</span>
+      <span class="font-medium">{{ transaction.issueDate | date:'medium' }}</span>
+    </div>
+  </div>
+
+  <!-- Return Items -->
+  <div class="space-y-4">
+    @for (item of returnItems; track item.transactionItemId) {
+      <div class="p-4 border border-gray-200 rounded-lg">
+        <div class="flex justify-between items-start mb-3">
+          <div>
+            <p class="font-semibold text-gray-800">{{ item.goodsName }}</p>
+            <p class="text-sm text-gray-500">Issued: {{ item.issued }} {{ item.unit }} | Already Returned: {{ item.returned }} {{ item.unit }}</p>
+            <p class="text-sm text-blue-600 font-medium">Remaining: {{ getMaxReturn(item) }} {{ item.unit }}</p>
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-gray-500 mb-1">Quantity to Return (Max: {{ getMaxReturn(item) }})</label>
+          <mat-form-field appearance="outline" class="w-full">
+            <input matInput type="number" [(ngModel)]="item.quantityReturned" 
+              min="0" [max]="getMaxReturn(item)" placeholder="Enter quantity">
+            <span matTextSuffix class="text-gray-400 text-sm ml-2">{{ item.unit }}</span>
+          </mat-form-field>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Actions -->
+  <div class="flex justify-end gap-3 pt-6 border-t border-gray-200 mt-6">
+    <button (click)="onCancel()" mat-button [disabled]="loading"
+      class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50">
+      Cancel
+    </button>
+    <button (click)="onSubmit()" mat-raised-button color="primary" [disabled]="loading"
+      class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 flex items-center gap-2">
+      @if (loading) { <mat-spinner diameter="18" strokeWidth="2"></mat-spinner> }
+      {{ loading ? 'Returning...' : 'Return Materials' }}
+    </button>
+  </div>
+</div>

@@ -1,143 +1,370 @@
 <div class="bg-gray-50 p-0 md:p-6 lg:p-8 overflow-y-auto scrollbar-hide">
   <div class="">
+    <!-- Header -->
     <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
       <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div>
-          <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-2">Transactions Management</h1>
-          <p class="text-gray-500 text-base">Manage all warehouse transactions</p>
+          <h1 class="text-3xl font-bold text-gray-800 mb-2">Transactions Management</h1>
+          <p class="text-gray-500">Manage all warehouse transactions</p>
         </div>
-
-        @if (authService.isAuthenticated()) {
-          <button 
-            (click)="openCreateDialog()"
-            class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium shadow-md">
-            <span class="text-lg font-semibold">+ New Transaction</span>
-          </button>
-        }
+        <button (click)="openCreateDialog()"
+          class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium shadow-md flex items-center gap-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+          + New Transaction
+        </button>
       </div>
 
-      <!-- Filter Buttons -->
+      <!-- Filter Section -->
       <div class="mt-6 pt-6 border-t border-gray-200">
-        <div class="flex flex-wrap gap-2">
-          <button (click)="showAll()" class="px-4 py-2 bg-green-600 text-white rounded-lg font-medium">All</button>
-          <button (click)="filterByCategory('NORMAL')" class="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium">Normal</button>
-          <button (click)="filterByCategory('EVENT')" class="px-4 py-2 bg-purple-600 text-white rounded-lg font-medium">Event</button>
+        <h3 class="text-lg font-semibold text-gray-700 mb-3">Filter Transactions</h3>
+
+        <!-- Transaction Type Buttons -->
+        <div class="mb-4">
+          <h4 class="text-md font-medium text-gray-600 mb-2">By Transaction Type</h4>
+          <div class="flex flex-wrap gap-2">
+            <button (click)="showAllTransactions()"
+              [class]="selectedTransactionType === null ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
+              class="px-4 py-2 rounded-lg font-medium transition-colors duration-200">
+              All Transactions
+            </button>
+            <button (click)="showByTransactionType('NORMAL')"
+              [class]="selectedTransactionType === 'NORMAL' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
+              class="px-4 py-2 rounded-lg font-medium transition-colors duration-200">
+              📋 Normal
+            </button>
+            <button (click)="showByTransactionType('EVENT')"
+              [class]="selectedTransactionType === 'EVENT' ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
+              class="px-4 py-2 rounded-lg font-medium transition-colors duration-200">
+              🎉 Event
+            </button>
+          </div>
+        </div>
+
+        <!-- ALL TRANSACTIONS FILTERS -->
+        @if (selectedTransactionType === null) {
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <div>
+              <label class="block text-xs font-medium text-gray-500 mb-1">Receiver Name</label>
+              <div class="relative">
+                <input type="text" [(ngModel)]="searchReceiverName" (ngModelChange)="onSearchReceiverChange()"
+                  placeholder="Search receiver..." 
+                  class="w-full pl-8 pr-8 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500">
+                <svg class="w-4 h-4 text-gray-400 absolute left-2 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                @if (searchReceiverName) {
+                  <button (click)="searchReceiverName=''; onSearchReceiverChange()" class="absolute right-2 top-2 text-gray-400 hover:text-gray-600">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                  </button>
+                }
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-500 mb-1">Contact Number</label>
+              <div class="relative">
+                <input type="text" [(ngModel)]="searchContact" (ngModelChange)="onSearchContactChange()"
+                  placeholder="Search contact..." 
+                  class="w-full pl-8 pr-8 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500">
+                <svg class="w-4 h-4 text-gray-400 absolute left-2 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                @if (searchContact) {
+                  <button (click)="searchContact=''; onSearchContactChange()" class="absolute right-2 top-2 text-gray-400 hover:text-gray-600">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                  </button>
+                }
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-500 mb-1">Approved By</label>
+              <div class="relative">
+                <input type="text" [(ngModel)]="searchApprovedBy" (ngModelChange)="onSearchApprovedByChange()"
+                  placeholder="Search approved by..." 
+                  class="w-full pl-8 pr-8 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500">
+                <svg class="w-4 h-4 text-gray-400 absolute left-2 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                @if (searchApprovedBy) {
+                  <button (click)="searchApprovedBy=''; onSearchApprovedByChange()" class="absolute right-2 top-2 text-gray-400 hover:text-gray-600">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                  </button>
+                }
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- NORMAL TRANSACTION FILTERS -->
+        @if (selectedTransactionType === 'NORMAL') {
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <div>
+              <label class="block text-xs font-medium text-gray-500 mb-1">Receiver Name</label>
+              <div class="relative">
+                <input type="text" [(ngModel)]="searchReceiverName" (ngModelChange)="onSearchNormalChange()"
+                  placeholder="Search receiver..." 
+                  class="w-full pl-8 pr-8 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500">
+                <svg class="w-4 h-4 text-gray-400 absolute left-2 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                @if (searchReceiverName) {
+                  <button (click)="searchReceiverName=''; onSearchNormalChange()" class="absolute right-2 top-2 text-gray-400 hover:text-gray-600">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                  </button>
+                }
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-500 mb-1">Contact Number</label>
+              <div class="relative">
+                <input type="text" [(ngModel)]="searchContact" (ngModelChange)="onSearchNormalChange()"
+                  placeholder="Search contact..." 
+                  class="w-full pl-8 pr-8 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500">
+                <svg class="w-4 h-4 text-gray-400 absolute left-2 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                @if (searchContact) {
+                  <button (click)="searchContact=''; onSearchNormalChange()" class="absolute right-2 top-2 text-gray-400 hover:text-gray-600">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                  </button>
+                }
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-500 mb-1">Duty Place</label>
+              <div class="relative">
+                <input type="text" [(ngModel)]="searchDutyPlace" (ngModelChange)="onSearchNormalChange()"
+                  placeholder="Search duty place..." 
+                  class="w-full pl-8 pr-8 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500">
+                <svg class="w-4 h-4 text-gray-400 absolute left-2 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                @if (searchDutyPlace) {
+                  <button (click)="searchDutyPlace=''; onSearchNormalChange()" class="absolute right-2 top-2 text-gray-400 hover:text-gray-600">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                  </button>
+                }
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- EVENT TRANSACTION FILTERS -->
+        @if (selectedTransactionType === 'EVENT') {
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+            <div>
+              <label class="block text-xs font-medium text-gray-500 mb-1">Event</label>
+              <select [(ngModel)]="selectedEventId" (ngModelChange)="onSearchEventChange()"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 outline-none">
+                <option value="">All Events</option>
+                @for (event of events; track event.id) {
+                  <option [value]="event.id">{{ event.eventName }}</option>
+                }
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-500 mb-1">Department</label>
+              <select [(ngModel)]="selectedDepartmentId" (ngModelChange)="onSearchEventChange()"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 outline-none">
+                <option value="">All Departments</option>
+                @for (dept of departments; track dept.id) {
+                  <option [value]="dept.id">{{ dept.departmentName }}</option>
+                }
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-500 mb-1">Receiver Name</label>
+              <div class="relative">
+                <input type="text" [(ngModel)]="searchEventReceiverName" (ngModelChange)="onSearchEventChange()"
+                  placeholder="Search receiver..." 
+                  class="w-full pl-8 pr-8 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-purple-500">
+                <svg class="w-4 h-4 text-gray-400 absolute left-2 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                @if (searchEventReceiverName) {
+                  <button (click)="searchEventReceiverName=''; onSearchEventChange()" class="absolute right-2 top-2 text-gray-400 hover:text-gray-600">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                  </button>
+                }
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-500 mb-1">Receiver Contact</label>
+              <div class="relative">
+                <input type="text" [(ngModel)]="searchEventReceiverContact" (ngModelChange)="onSearchEventChange()"
+                  placeholder="Search contact..." 
+                  class="w-full pl-8 pr-8 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-purple-500">
+                <svg class="w-4 h-4 text-gray-400 absolute left-2 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                @if (searchEventReceiverContact) {
+                  <button (click)="searchEventReceiverContact=''; onSearchEventChange()" class="absolute right-2 top-2 text-gray-400 hover:text-gray-600">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                  </button>
+                }
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- Filter Actions -->
+        <div class="flex items-center justify-between">
+          <div class="text-sm text-gray-500">
+            Showing: 
+            <span class="font-semibold">{{ selectedTransactionType === null ? 'All' : selectedTransactionType === 'NORMAL' ? 'Normal' : 'Event' }}</span>
+            @if (selectedEventId) { → <span class="font-semibold">{{ getEventName(selectedEventId) }}</span> }
+            @if (selectedDepartmentId) { → <span class="font-semibold">{{ getDepartmentName(selectedDepartmentId) }}</span> }
+            transactions
+          </div>
+          <button (click)="clearFilters()"
+            class="px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-200">
+            Clear All Filters
+          </button>
         </div>
       </div>
     </div>
 
+    <!-- Table -->
     <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+      
       @if (loading) {
-        <div class="p-8 text-center">
+        <div class="p-8 text-center text-gray-600">
           <mat-spinner diameter="28"></mat-spinner>
+          <p class="mt-3 text-lg">Loading transactions...</p>
         </div>
       }
 
       @if (!loading && dataSource.data.length === 0) {
         <div class="p-8 text-center">
           <mat-icon class="text-6xl text-gray-300 mb-4">receipt_long</mat-icon>
-          <h3 class="text-xl font-semibold text-gray-600">No Transactions Found</h3>
+          <h3 class="text-xl font-semibold text-gray-600 mb-2">No Transactions Found</h3>
+          <p class="text-gray-500 mb-6">Try adjusting filters or create a new transaction.</p>
+          <button (click)="openCreateDialog()"
+            class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold shadow-md">
+            Create First Transaction
+          </button>
         </div>
       }
 
       @if (!loading && dataSource.data.length > 0) {
         <div class="overflow-x-auto">
           <table mat-table [dataSource]="dataSource" class="w-full">
+            
             <ng-container matColumnDef="id">
-              <th mat-header-cell *matHeaderCellDef class="px-4 py-4 text-left font-semibold bg-gray-50">ID</th>
-              <td mat-cell *matCellDef="let tx" class="px-4 py-4 border-t">{{ tx.id }}</td>
+              <th mat-header-cell *matHeaderCellDef class="px-4 py-4 text-left font-semibold text-gray-700 bg-gray-50">ID</th>
+              <td mat-cell *matCellDef="let tx" class="px-4 py-4 border-t text-gray-700">{{ tx.id }}</td>
             </ng-container>
 
             <ng-container matColumnDef="transactionCategory">
-              <th mat-header-cell *matHeaderCellDef class="px-4 py-4 text-left font-semibold bg-gray-50">Type</th>
+              <th mat-header-cell *matHeaderCellDef class="px-4 py-4 text-left font-semibold text-gray-700 bg-gray-50">Type</th>
               <td mat-cell *matCellDef="let tx" class="px-4 py-4 border-t">
-                <span [class]="tx.transactionCategory === 'EVENT' ? 'bg-purple-100 text-purple-700 px-2 py-1 rounded text-sm' : 'bg-blue-100 text-blue-700 px-2 py-1 rounded text-sm'">
+                <span [class]="tx.transactionCategory === 'EVENT' ? 'bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm font-medium' : 'bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium'">
                   {{ tx.transactionCategory }}
                 </span>
               </td>
             </ng-container>
 
-            <ng-container matColumnDef="goodsName">
-              <th mat-header-cell *matHeaderCellDef class="px-4 py-4 text-left font-semibold bg-gray-50">Goods</th>
-              <td mat-cell *matCellDef="let tx" class="px-4 py-4 border-t font-medium">{{ tx.goodsName }}</td>
-            </ng-container>
-
-            <ng-container matColumnDef="quantityIssued">
-              <th mat-header-cell *matHeaderCellDef class="px-4 py-4 text-left font-semibold bg-gray-50">Issued</th>
-              <td mat-cell *matCellDef="let tx" class="px-4 py-4 border-t">{{ tx.quantityIssued }}</td>
-            </ng-container>
-
-            <ng-container matColumnDef="quantityReturned">
-              <th mat-header-cell *matHeaderCellDef class="px-4 py-4 text-left font-semibold bg-gray-50">Returned</th>
-              <td mat-cell *matCellDef="let tx" class="px-4 py-4 border-t">{{ tx.quantityReturned }}</td>
+            <ng-container matColumnDef="itemsCount">
+              <th mat-header-cell *matHeaderCellDef class="px-4 py-4 text-left font-semibold text-gray-700 bg-gray-50">Items</th>
+              <td mat-cell *matCellDef="let tx" class="px-4 py-4 border-t">
+                <button (click)="viewItems(tx)" 
+                  class="text-blue-600 hover:text-blue-800 font-medium text-sm underline">
+                  {{ tx.items?.length || 0 }} item(s)
+                </button>
+              </td>
             </ng-container>
 
             <ng-container matColumnDef="receiverName">
-              <th mat-header-cell *matHeaderCellDef class="px-4 py-4 text-left font-semibold bg-gray-50">Receiver</th>
-              <td mat-cell *matCellDef="let tx" class="px-4 py-4 border-t">{{ tx.receiverName || tx.eventReceiverName }}</td>
+              <th mat-header-cell *matHeaderCellDef class="px-4 py-4 text-left font-semibold text-gray-700 bg-blue-50">Receiver</th>
+              <td mat-cell *matCellDef="let tx" class="px-4 py-4 border-t font-medium">{{ tx.receiverName || '—' }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="receiverContact">
+              <th mat-header-cell *matHeaderCellDef class="px-4 py-4 text-left font-semibold text-gray-700 bg-blue-50">Contact</th>
+              <td mat-cell *matCellDef="let tx" class="px-4 py-4 border-t">{{ tx.receiverContact || '—' }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="receiverDutyPlace">
+              <th mat-header-cell *matHeaderCellDef class="px-4 py-4 text-left font-semibold text-gray-700 bg-blue-50">Duty Place</th>
+              <td mat-cell *matCellDef="let tx" class="px-4 py-4 border-t">{{ tx.receiverDutyPlace || '—' }}</td>
             </ng-container>
 
             <ng-container matColumnDef="eventName">
-              <th mat-header-cell *matHeaderCellDef class="px-4 py-4 text-left font-semibold bg-gray-50">Event</th>
-              <td mat-cell *matCellDef="let tx" class="px-4 py-4 border-t">{{ tx.eventName || '-' }}</td>
+              <th mat-header-cell *matHeaderCellDef class="px-4 py-4 text-left font-semibold text-gray-700 bg-purple-50">Event</th>
+              <td mat-cell *matCellDef="let tx" class="px-4 py-4 border-t text-purple-700 font-medium">{{ tx.eventName || '—' }}</td>
             </ng-container>
 
             <ng-container matColumnDef="departmentName">
-              <th mat-header-cell *matHeaderCellDef class="px-4 py-4 text-left font-semibold bg-gray-50">Department</th>
-              <td mat-cell *matCellDef="let tx" class="px-4 py-4 border-t">{{ tx.departmentName || '-' }}</td>
+              <th mat-header-cell *matHeaderCellDef class="px-4 py-4 text-left font-semibold text-gray-700 bg-purple-50">Department</th>
+              <td mat-cell *matCellDef="let tx" class="px-4 py-4 border-t text-teal-700 font-medium">{{ tx.departmentName || '—' }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="eventReceiverName">
+              <th mat-header-cell *matHeaderCellDef class="px-4 py-4 text-left font-semibold text-gray-700 bg-purple-50">Event Receiver</th>
+              <td mat-cell *matCellDef="let tx" class="px-4 py-4 border-t font-medium">{{ tx.eventReceiverName || '—' }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="eventReceiverContact">
+              <th mat-header-cell *matHeaderCellDef class="px-4 py-4 text-left font-semibold text-gray-700 bg-purple-50">Event Contact</th>
+              <td mat-cell *matCellDef="let tx" class="px-4 py-4 border-t">{{ tx.eventReceiverContact || '—' }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="issuedByName">
+              <th mat-header-cell *matHeaderCellDef class="px-4 py-4 text-left font-semibold text-gray-700 bg-gray-50">Issued By</th>
+              <td mat-cell *matCellDef="let tx" class="px-4 py-4 border-t text-gray-700">{{ tx.issuedByName || '—' }}</td>
             </ng-container>
 
             <ng-container matColumnDef="issueDate">
-              <th mat-header-cell *matHeaderCellDef class="px-4 py-4 text-left font-semibold bg-gray-50">Issue Date</th>
-              <td mat-cell *matCellDef="let tx" class="px-4 py-4 border-t text-sm">{{ tx.issueDate | date:'medium' }}</td>
+              <th mat-header-cell *matHeaderCellDef class="px-4 py-4 text-left font-semibold text-gray-700 bg-gray-50">Issue Date</th>
+              <td mat-cell *matCellDef="let tx" class="px-4 py-4 border-t text-gray-600 text-sm">
+                <div class="font-medium">{{ tx.issueDate | date:'mediumDate' }}</div>
+                <div class="text-xs text-gray-500">{{ tx.issueDate | date:'shortTime' }}</div>
+              </td>
             </ng-container>
 
             <ng-container matColumnDef="returnDate">
-              <th mat-header-cell *matHeaderCellDef class="px-4 py-4 text-left font-semibold bg-gray-50">Return Date</th>
-              <td mat-cell *matCellDef="let tx" class="px-4 py-4 border-t text-sm">{{ tx.returnDate ? (tx.returnDate | date:'medium') : 'Not returned' }}</td>
+              <th mat-header-cell *matHeaderCellDef class="px-4 py-4 text-left font-semibold text-gray-700 bg-gray-50">Return Date</th>
+              <td mat-cell *matCellDef="let tx" class="px-4 py-4 border-t text-gray-600 text-sm">
+                @if (tx.returnDate) {
+                  <div class="font-medium">{{ tx.returnDate | date:'mediumDate' }}</div>
+                  <div class="text-xs text-gray-500">{{ tx.returnDate | date:'shortTime' }}</div>
+                } @else {
+                  <span class="text-red-400 italic">Not returned</span>
+                }
+              </td>
             </ng-container>
 
             <ng-container matColumnDef="status">
-              <th mat-header-cell *matHeaderCellDef class="px-4 py-4 text-left font-semibold bg-gray-50">Status</th>
+              <th mat-header-cell *matHeaderCellDef class="px-4 py-4 text-left font-semibold text-gray-700 bg-gray-50">Status</th>
               <td mat-cell *matCellDef="let tx" class="px-4 py-4 border-t">
-                <span [class]="tx.status === 'ISSUED' ? 'bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-sm' : 'bg-green-100 text-green-700 px-2 py-1 rounded text-sm'">
-                  {{ tx.status }}
-                </span>
+                @if (tx.status === 'ISSUED') {
+                  <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-sm font-medium">{{ tx.status }}</span>
+                } @else if (tx.status === 'RETURNED') {
+                  <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium">{{ tx.status }}</span>
+                } @else {
+                  <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-medium">{{ tx.status }}</span>
+                }
               </td>
             </ng-container>
 
             <ng-container matColumnDef="actions">
-              <th mat-header-cell *matHeaderCellDef class="px-4 py-4 text-center font-semibold bg-gray-50">Actions</th>
+              <th mat-header-cell *matHeaderCellDef class="px-4 py-4 text-center font-semibold text-gray-700 bg-gray-50">Actions</th>
               <td mat-cell *matCellDef="let tx" class="px-4 py-4 border-t">
                 <div class="flex gap-2 justify-center">
-                  @if (authService.canDeleteEntities()) {
-                    <button (click)="deleteTransaction(tx)" mat-icon-button class="!text-red-600">
-                      <mat-icon>delete</mat-icon>
+                  <button (click)="editTransaction(tx)" mat-icon-button class="!text-blue-600 hover:!bg-blue-50" matTooltip="Edit">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  @if (tx.status === 'ISSUED') {
+                    <button (click)="openReturnDialog(tx)" mat-icon-button class="!text-green-600 hover:!bg-green-50" matTooltip="Return">
+                      <mat-icon>assignment_return</mat-icon>
                     </button>
                   }
+                  <button (click)="deleteTransaction(tx)" mat-icon-button class="!text-red-600 hover:!bg-red-50" matTooltip="Delete">
+                    <mat-icon>delete</mat-icon>
+                  </button>
                 </div>
               </td>
             </ng-container>
 
             <tr mat-header-row *matHeaderRowDef="displayedColumns" class="h-16"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover:bg-gray-50 h-14"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover:bg-gray-50 transition-colors duration-150 h-14"></tr>
           </table>
         </div>
       }
 
-      <!-- Table Footer -->
       @if (!loading && dataSource.data.length > 0) {
-        <div class="flex items-center justify-between px-4 py-3 bg-gray-50 border-t border-gray-200">
+        <div class="px-4 py-3 bg-gray-50 border-t border-gray-200">
           <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
             <p class="text-sm text-gray-600">
-              Showing
-              <span class="font-semibold">{{ dataSource.filteredData.length }}</span> transaction{{
-                dataSource.filteredData.length !== 1 ? 's' : ''
-              }}
+              Showing <span class="font-semibold">{{ dataSource.filteredData.length }}</span>
+              transaction{{ dataSource.filteredData.length !== 1 ? 's' : '' }}
             </p>
-          </div>
-          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-            <p class="text-sm text-gray-600">Last updated: {{ today | date: 'medium' }}</p>
+            <div class="text-xs text-gray-500">
+              Last updated: {{ today | date:'medium' }}
+            </div>
           </div>
         </div>
       }
