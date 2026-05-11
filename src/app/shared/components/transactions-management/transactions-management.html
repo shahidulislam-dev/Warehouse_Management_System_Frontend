@@ -30,12 +30,12 @@
             <button (click)="showByTransactionType('NORMAL')"
               [class]="selectedTransactionType === 'NORMAL' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
               class="px-4 py-2 rounded-lg font-medium transition-colors duration-200">
-              📋 Normal
+              Normal
             </button>
             <button (click)="showByTransactionType('EVENT')"
               [class]="selectedTransactionType === 'EVENT' ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
               class="px-4 py-2 rounded-lg font-medium transition-colors duration-200">
-              🎉 Event
+              Event
             </button>
           </div>
         </div>
@@ -201,171 +201,226 @@
           </div>
           <button (click)="clearFilters()"
             class="px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-200">
-            Clear All Filters
+            Clear Filters
           </button>
         </div>
       </div>
     </div>
 
-    <!-- Table -->
+    <!-- Table Section -->
     <div class="bg-white rounded-xl shadow-sm overflow-hidden">
       
+      <!-- Loading State -->
       @if (loading) {
-        <div class="p-8 text-center text-gray-600">
-          <mat-spinner diameter="28"></mat-spinner>
-          <p class="mt-3 text-lg">Loading transactions...</p>
+        <div class="flex flex-col items-center justify-center py-16">
+          <mat-spinner diameter="36" class="mb-4"></mat-spinner>
+          <p class="text-gray-500 font-medium">Loading transactions...</p>
         </div>
       }
 
+      <!-- Empty State -->
       @if (!loading && dataSource.data.length === 0) {
-        <div class="p-8 text-center">
-          <mat-icon class="text-6xl text-gray-300 mb-4">receipt_long</mat-icon>
-          <h3 class="text-xl font-semibold text-gray-600 mb-2">No Transactions Found</h3>
-          <p class="text-gray-500 mb-6">Try adjusting filters or create a new transaction.</p>
-          <button (click)="openCreateDialog()"
-            class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold shadow-md">
-            Create First Transaction
+        <div class="flex flex-col items-center justify-center py-16">
+          <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+            <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-600 mb-1">No Transactions Found</h3>
+          <p class="text-gray-400 text-sm mb-4">Create your first transaction to get started.</p>
+          <button (click)="openCreateDialog()" 
+            class="bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-lg font-medium transition-colors duration-200 text-sm">
+            Create Transaction
           </button>
         </div>
       }
 
+      <!-- Table -->
       @if (!loading && dataSource.data.length > 0) {
         <div class="overflow-x-auto">
           <table mat-table [dataSource]="dataSource" class="w-full">
             
+            <!-- ID -->
             <ng-container matColumnDef="id">
-              <th mat-header-cell *matHeaderCellDef class="px-4 py-4 text-left font-semibold text-gray-700 bg-gray-50">ID</th>
-              <td mat-cell *matCellDef="let tx" class="px-4 py-4 border-t text-gray-700">{{ tx.id }}</td>
+              <th mat-header-cell *matHeaderCellDef class="px-4 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider bg-gray-50">#</th>
+              <td mat-cell *matCellDef="let tx" class="px-4 py-3 border-t border-gray-100 text-sm text-gray-500 font-mono">{{ tx.id }}</td>
             </ng-container>
 
+            <!-- Type -->
             <ng-container matColumnDef="transactionCategory">
-              <th mat-header-cell *matHeaderCellDef class="px-4 py-4 text-left font-semibold text-gray-700 bg-gray-50">Type</th>
-              <td mat-cell *matCellDef="let tx" class="px-4 py-4 border-t">
-                <span [class]="tx.transactionCategory === 'EVENT' ? 'bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm font-medium' : 'bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium'">
+              <th mat-header-cell *matHeaderCellDef class="px-4 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider bg-gray-50">Type</th>
+              <td mat-cell *matCellDef="let tx" class="px-4 py-3 border-t border-gray-100">
+                <span [class]="tx.transactionCategory === 'EVENT' ? 
+                  'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800' : 
+                  'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800'">
                   {{ tx.transactionCategory }}
                 </span>
               </td>
             </ng-container>
 
+            <!-- Items Count -->
             <ng-container matColumnDef="itemsCount">
-              <th mat-header-cell *matHeaderCellDef class="px-4 py-4 text-left font-semibold text-gray-700 bg-gray-50">Items</th>
-              <td mat-cell *matCellDef="let tx" class="px-4 py-4 border-t">
+              <th mat-header-cell *matHeaderCellDef class="px-4 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider bg-gray-50">Items</th>
+              <td mat-cell *matCellDef="let tx" class="px-4 py-3 border-t border-gray-100">
                 <button (click)="viewItems(tx)" 
-                  class="text-blue-600 hover:text-blue-800 font-medium text-sm underline">
-                  {{ tx.items?.length || 0 }} item(s)
+                  class="text-blue-600 hover:text-blue-800 font-medium text-sm hover:underline">
+                  {{ tx.items?.length || 0 }}item(s) <br><span class="text-blue-600 hover:text-blue-800 font-medium text-xs hover:underline">Click to show items</span>
                 </button>
               </td>
             </ng-container>
 
+            <!-- Receiver Name (Normal) -->
             <ng-container matColumnDef="receiverName">
-              <th mat-header-cell *matHeaderCellDef class="px-4 py-4 text-left font-semibold text-gray-700 bg-blue-50">Receiver</th>
-              <td mat-cell *matCellDef="let tx" class="px-4 py-4 border-t font-medium">{{ tx.receiverName || '—' }}</td>
+              <th mat-header-cell *matHeaderCellDef class="px-4 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider bg-blue-50">Receiver</th>
+              <td mat-cell *matCellDef="let tx" class="px-4 py-3 border-t border-gray-100 text-sm text-gray-800">{{ tx.receiverName || '—' }}</td>
             </ng-container>
 
+            <!-- Contact (Normal) -->
             <ng-container matColumnDef="receiverContact">
-              <th mat-header-cell *matHeaderCellDef class="px-4 py-4 text-left font-semibold text-gray-700 bg-blue-50">Contact</th>
-              <td mat-cell *matCellDef="let tx" class="px-4 py-4 border-t">{{ tx.receiverContact || '—' }}</td>
+              <th mat-header-cell *matHeaderCellDef class="px-4 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider bg-blue-50">Contact</th>
+              <td mat-cell *matCellDef="let tx" class="px-4 py-3 border-t border-gray-100 text-sm text-gray-600">{{ tx.receiverContact || '—' }}</td>
             </ng-container>
 
+            <!-- Duty Place (Normal) -->
             <ng-container matColumnDef="receiverDutyPlace">
-              <th mat-header-cell *matHeaderCellDef class="px-4 py-4 text-left font-semibold text-gray-700 bg-blue-50">Duty Place</th>
-              <td mat-cell *matCellDef="let tx" class="px-4 py-4 border-t">{{ tx.receiverDutyPlace || '—' }}</td>
+              <th mat-header-cell *matHeaderCellDef class="px-4 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider bg-blue-50">Duty Place</th>
+              <td mat-cell *matCellDef="let tx" class="px-4 py-3 border-t border-gray-100 text-sm text-gray-600">{{ tx.receiverDutyPlace || '—' }}</td>
             </ng-container>
 
+            <!-- Event Name (Event) -->
             <ng-container matColumnDef="eventName">
-              <th mat-header-cell *matHeaderCellDef class="px-4 py-4 text-left font-semibold text-gray-700 bg-purple-50">Event</th>
-              <td mat-cell *matCellDef="let tx" class="px-4 py-4 border-t text-purple-700 font-medium">{{ tx.eventName || '—' }}</td>
+              <th mat-header-cell *matHeaderCellDef class="px-4 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider bg-purple-50">Event</th>
+              <td mat-cell *matCellDef="let tx" class="px-4 py-3 border-t border-gray-100 text-sm text-purple-700 font-medium">{{ tx.eventName || '—' }}</td>
             </ng-container>
 
+            <!-- Department (Event) -->
             <ng-container matColumnDef="departmentName">
-              <th mat-header-cell *matHeaderCellDef class="px-4 py-4 text-left font-semibold text-gray-700 bg-purple-50">Department</th>
-              <td mat-cell *matCellDef="let tx" class="px-4 py-4 border-t text-teal-700 font-medium">{{ tx.departmentName || '—' }}</td>
+              <th mat-header-cell *matHeaderCellDef class="px-4 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider bg-purple-50">Department</th>
+              <td mat-cell *matCellDef="let tx" class="px-4 py-3 border-t border-gray-100 text-sm text-teal-700 font-medium">{{ tx.departmentName || '—' }}</td>
             </ng-container>
 
+            <!-- Event Receiver (Event) -->
             <ng-container matColumnDef="eventReceiverName">
-              <th mat-header-cell *matHeaderCellDef class="px-4 py-4 text-left font-semibold text-gray-700 bg-purple-50">Event Receiver</th>
-              <td mat-cell *matCellDef="let tx" class="px-4 py-4 border-t font-medium">{{ tx.eventReceiverName || '—' }}</td>
+              <th mat-header-cell *matHeaderCellDef class="px-4 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider bg-purple-50">Event Receiver</th>
+              <td mat-cell *matCellDef="let tx" class="px-4 py-3 border-t border-gray-100 text-sm text-gray-800">{{ tx.eventReceiverName || '—' }}</td>
             </ng-container>
 
+            <!-- Event Contact (Event) -->
             <ng-container matColumnDef="eventReceiverContact">
-              <th mat-header-cell *matHeaderCellDef class="px-4 py-4 text-left font-semibold text-gray-700 bg-purple-50">Event Contact</th>
-              <td mat-cell *matCellDef="let tx" class="px-4 py-4 border-t">{{ tx.eventReceiverContact || '—' }}</td>
+              <th mat-header-cell *matHeaderCellDef class="px-4 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider bg-purple-50">Event Contact</th>
+              <td mat-cell *matCellDef="let tx" class="px-4 py-3 border-t border-gray-100 text-sm text-gray-600">{{ tx.eventReceiverContact || '—' }}</td>
             </ng-container>
 
+            <!-- Issued By -->
             <ng-container matColumnDef="issuedByName">
-              <th mat-header-cell *matHeaderCellDef class="px-4 py-4 text-left font-semibold text-gray-700 bg-gray-50">Issued By</th>
-              <td mat-cell *matCellDef="let tx" class="px-4 py-4 border-t text-gray-700">{{ tx.issuedByName || '—' }}</td>
+              <th mat-header-cell *matHeaderCellDef class="px-4 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider bg-gray-50">Issued By</th>
+              <td mat-cell *matCellDef="let tx" class="px-4 py-3 border-t border-gray-100 text-sm text-gray-700">{{ tx.issuedByName || '—' }}</td>
             </ng-container>
 
+            <!-- Issue Date -->
             <ng-container matColumnDef="issueDate">
-              <th mat-header-cell *matHeaderCellDef class="px-4 py-4 text-left font-semibold text-gray-700 bg-gray-50">Issue Date</th>
-              <td mat-cell *matCellDef="let tx" class="px-4 py-4 border-t text-gray-600 text-sm">
-                <div class="font-medium">{{ tx.issueDate | date:'mediumDate' }}</div>
-                <div class="text-xs text-gray-500">{{ tx.issueDate | date:'shortTime' }}</div>
-              </td>
-            </ng-container>
-
-            <ng-container matColumnDef="returnDate">
-              <th mat-header-cell *matHeaderCellDef class="px-4 py-4 text-left font-semibold text-gray-700 bg-gray-50">Return Date</th>
-              <td mat-cell *matCellDef="let tx" class="px-4 py-4 border-t text-gray-600 text-sm">
-                @if (tx.returnDate) {
-                  <div class="font-medium">{{ tx.returnDate | date:'mediumDate' }}</div>
-                  <div class="text-xs text-gray-500">{{ tx.returnDate | date:'shortTime' }}</div>
-                } @else {
-                  <span class="text-red-400 italic">Not returned</span>
-                }
-              </td>
-            </ng-container>
-
-            <ng-container matColumnDef="status">
-              <th mat-header-cell *matHeaderCellDef class="px-4 py-4 text-left font-semibold text-gray-700 bg-gray-50">Status</th>
-              <td mat-cell *matCellDef="let tx" class="px-4 py-4 border-t">
-                @if (tx.status === 'ISSUED') {
-                  <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-sm font-medium">{{ tx.status }}</span>
-                } @else if (tx.status === 'RETURNED') {
-                  <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium">{{ tx.status }}</span>
-                } @else {
-                  <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-medium">{{ tx.status }}</span>
-                }
-              </td>
-            </ng-container>
-
-            <ng-container matColumnDef="actions">
-              <th mat-header-cell *matHeaderCellDef class="px-4 py-4 text-center font-semibold text-gray-700 bg-gray-50">Actions</th>
-              <td mat-cell *matCellDef="let tx" class="px-4 py-4 border-t">
-                <div class="flex gap-2 justify-center">
-                  <button (click)="editTransaction(tx)" mat-icon-button class="!text-blue-600 hover:!bg-blue-50" matTooltip="Edit">
-                    <mat-icon>edit</mat-icon>
-                  </button>
-                  @if (tx.status === 'ISSUED') {
-                    <button (click)="openReturnDialog(tx)" mat-icon-button class="!text-green-600 hover:!bg-green-50" matTooltip="Return">
-                      <mat-icon>assignment_return</mat-icon>
-                    </button>
-                  }
-                  <button (click)="deleteTransaction(tx)" mat-icon-button class="!text-red-600 hover:!bg-red-50" matTooltip="Delete">
-                    <mat-icon>delete</mat-icon>
-                  </button>
+              <th mat-header-cell *matHeaderCellDef class="px-4 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider bg-gray-50">Issue Date</th>
+              <td mat-cell *matCellDef="let tx" class="px-4 py-3 border-t border-gray-100">
+                <div class="text-sm">
+                  <div class="text-gray-700">{{ tx.issueDate | date:'MMM d, yyyy' }}</div>
+                  <div class="text-gray-400 text-xs">{{ tx.issueDate | date:'h:mm a' }}</div>
                 </div>
               </td>
             </ng-container>
 
-            <tr mat-header-row *matHeaderRowDef="displayedColumns" class="h-16"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover:bg-gray-50 transition-colors duration-150 h-14"></tr>
+            <!-- Return Date -->
+            <ng-container matColumnDef="returnDate">
+              <th mat-header-cell *matHeaderCellDef class="px-4 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider bg-gray-50">Return Date</th>
+              <td mat-cell *matCellDef="let tx" class="px-4 py-3 border-t border-gray-100">
+                @if (tx.returnDate) {
+                  <div class="text-sm">
+                    <div class="text-gray-700">{{ tx.returnDate | date:'MMM d, yyyy' }}</div>
+                    <div class="text-gray-400 text-xs">{{ tx.returnDate | date:'h:mm a' }}</div>
+                  </div>
+                } @else {
+                  <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-50 text-red-600">Pending</span>
+                }
+              </td>
+            </ng-container>
+
+            <!-- Status -->
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef class="px-4 py-3.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider bg-gray-50">Status</th>
+              <td mat-cell *matCellDef="let tx" class="px-4 py-3 border-t border-gray-100">
+                @if (tx.status === 'ISSUED') {
+                  <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200">
+                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Issued
+                  </span>
+                } @else if (tx.status === 'PARTIALLY_RETURNED') {
+                  <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-orange-50 text-orange-700 border border-orange-200">
+                    <span class="w-1.5 h-1.5 rounded-full bg-orange-500"></span> Partial
+                  </span>
+                } @else if (tx.status === 'RETURNED') {
+                  <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-green-50 text-green-700 border border-green-200">
+                    <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Returned
+                  </span>
+                } @else {
+                  <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-red-50 text-red-700 border border-red-200">
+                    <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> {{ tx.status }}
+                  </span>
+                }
+              </td>
+            </ng-container>
+
+            <!-- ACTIONS -->
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef class="px-4 py-3.5 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider bg-gray-50">Actions</th>
+              <td mat-cell *matCellDef="let tx" class="px-4 py-3 border-t border-gray-100">
+                <div class="flex items-center gap-1 justify-center">
+                  
+                  <!-- Edit -->
+                  <button (click)="editTransaction(tx)" 
+                    class="p-1.5 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors duration-150"
+                    matTooltip="Edit">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                    </svg>
+                  </button>
+                  
+                  <!-- Return - Show for ISSUED and PARTIALLY_RETURNED -->
+                  @if (tx.status === 'ISSUED' || tx.status === 'PARTIALLY_RETURNED') {
+                    <button (click)="openReturnDialog(tx)" 
+                      class="p-1.5 rounded-lg text-gray-400 hover:text-green-600 hover:bg-green-50 transition-colors duration-150"
+                      matTooltip="Return">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                      </svg>
+                    </button>
+                  }
+                  
+                  <!-- Delete -->
+                  <button (click)="deleteTransaction(tx)" 
+                    class="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors duration-150"
+                    matTooltip="Delete">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                  </button>
+                  
+                </div>
+              </td>
+            </ng-container>
+
+            <!-- Header & Row Definitions -->
+            <tr mat-header-row *matHeaderRowDef="displayedColumns" class="h-12"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover:bg-gray-50/50 transition-colors duration-150 h-12"></tr>
           </table>
         </div>
       }
 
+      <!-- Table Footer -->
       @if (!loading && dataSource.data.length > 0) {
-        <div class="px-4 py-3 bg-gray-50 border-t border-gray-200">
-          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-            <p class="text-sm text-gray-600">
-              Showing <span class="font-semibold">{{ dataSource.filteredData.length }}</span>
-              transaction{{ dataSource.filteredData.length !== 1 ? 's' : '' }}
-            </p>
-            <div class="text-xs text-gray-500">
-              Last updated: {{ today | date:'medium' }}
-            </div>
-          </div>
+        <div class="px-6 py-3 bg-gray-50 border-t border-gray-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+          <p class="text-sm text-gray-500">
+            Showing <span class="font-semibold text-gray-700">{{ dataSource.data.length }}</span> 
+            transaction{{ dataSource.data.length !== 1 ? 's' : '' }}
+          </p>
+          <p class="text-xs text-gray-400">
+            Last updated: {{ today | date:'MMM d, yyyy, h:mm a' }}
+          </p>
         </div>
       }
     </div>

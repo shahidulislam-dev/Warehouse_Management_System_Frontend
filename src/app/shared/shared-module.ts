@@ -31,6 +31,7 @@ import { TransactionsManagement } from './components/transactions-management/tra
 import { CreateTransactions } from './components/transactions-management/create-transactions/create-transactions';
 import { ReturnTransactionDialog } from './components/transactions-management/return-transaction-dialog/return-transaction-dialog';
 import { TransactionItemsDialog } from './components/transactions-management/transaction-items-dialog/transaction-items-dialog';
+import { MatAutocomplete, MatAutocompleteTrigger } from "@angular/material/autocomplete";
 
 
 
@@ -74,8 +75,10 @@ import { TransactionItemsDialog } from './components/transactions-management/tra
     RouterModule,
     MatButtonModule,
     ReactiveFormsModule,
-    FormsModule
-  ],
+    FormsModule,
+    MatAutocomplete,
+    MatAutocompleteTrigger
+],
   exports: [
     Layout,
     ConfirmDialog,

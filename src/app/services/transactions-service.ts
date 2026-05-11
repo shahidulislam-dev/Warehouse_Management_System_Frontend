@@ -12,7 +12,11 @@ export interface TransactionItemResponse {
   unit: string;
   quantity: number;
   quantityReturned: number;
+  quantityDamaged: number;
+  quantityLost: number;
   status: string;
+  returnableType: string;
+  notes: string;
 }
 
 export interface TransactionResponse {
@@ -26,6 +30,7 @@ export interface TransactionResponse {
   approvedBy: string;
   issueDate: string;
   returnDate: string;
+  returnNotes: string;
   receiverName: string;
   receiverContact: string;
   receiverDutyPlace: string;
@@ -42,7 +47,7 @@ export interface TransactionResponse {
 export interface TransactionRequest {
   transactionCategory: string;
   approvedBy: string;
-  items: { goodsId: number; quantity: number }[];
+  items: { goodsId: number; quantity: number; returnableType: string }[];
   receiverName: string;
   receiverContact: string;
   receiverDutyPlace: string;
@@ -54,7 +59,15 @@ export interface TransactionRequest {
 
 export interface ReturnRequest {
   transactionId: number;
-  items: { transactionItemId: number; quantityReturned: number }[];
+  returnNotes: string;
+  items: {
+    transactionItemId: number;
+    quantityReturned: number;
+    quantityDamaged: number;
+    quantityLost: number;
+    status: string;
+    notes: string;
+  }[];
 }
 
 @Injectable({ providedIn: 'root' })

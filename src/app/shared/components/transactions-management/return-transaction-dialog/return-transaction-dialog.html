@@ -1,59 +1,61 @@
-<!-- return-transaction-dialog/return-transaction-dialog.html -->
 <div class="p-6 min-w-[90vw] md:min-w-[600px] max-h-[90vh] overflow-y-auto">
-  <div class="flex items-center justify-between mb-6 pb-4 border-b border-gray-200">
-    <h2 class="text-2xl font-bold text-gray-800">Return Materials</h2>
-    <button mat-icon-button (click)="onCancel()" class="text-gray-400 hover:text-gray-600" [disabled]="loading">
-      <mat-icon>close</mat-icon>
-    </button>
+  <div class="flex items-center justify-between mb-6 pb-4 border-b">
+    <h2 class="text-2xl font-bold">Return - Transaction #{{ transaction.id }}</h2>
+    <button mat-icon-button (click)="onCancel()" [disabled]="loading"><mat-icon>close</mat-icon></button>
   </div>
 
-  <!-- Transaction Info -->
-  <div class="mb-4 p-4 bg-gray-50 rounded-lg">
-    <div class="grid grid-cols-2 gap-2 text-sm">
-      <span class="text-gray-500">Transaction ID:</span>
-      <span class="font-medium">#{{ transaction.id }}</span>
-      <span class="text-gray-500">Type:</span>
-      <span class="font-medium">{{ transaction.transactionCategory }}</span>
-      <span class="text-gray-500">Receiver:</span>
-      <span class="font-medium">{{ transaction.receiverName || transaction.eventReceiverName }}</span>
-      <span class="text-gray-500">Issue Date:</span>
-      <span class="font-medium">{{ transaction.issueDate | date:'medium' }}</span>
+  <div class="mb-4 p-3 bg-gray-50 rounded-lg grid grid-cols-2 gap-1 text-sm">
+    <span class="text-gray-500">Type:</span><span class="font-medium">{{ transaction.transactionCategory }}</span>
+    <span class="text-gray-500">Status:</span><span class="font-medium">{{ transaction.status }}</span>
+    <span class="text-gray-500">Receiver:</span><span class="font-medium">{{ transaction.receiverName || transaction.eventReceiverName }}</span>
+  </div>
+
+  @if (returnItems.length === 0) {
+    <div class="text-center py-8 border rounded-lg">
+      <mat-icon class="text-4xl text-gray-300 mb-2">check_circle</mat-icon>
+      <p class="text-gray-500">All items have been fully processed</p>
     </div>
-  </div>
+  }
 
-  <!-- Return Items -->
-  <div class="space-y-4">
-    @for (item of returnItems; track item.transactionItemId) {
-      <div class="p-4 border border-gray-200 rounded-lg">
-        <div class="flex justify-between items-start mb-3">
-          <div>
-            <p class="font-semibold text-gray-800">{{ item.goodsName }}</p>
-            <p class="text-sm text-gray-500">Issued: {{ item.issued }} {{ item.unit }} | Already Returned: {{ item.returned }} {{ item.unit }}</p>
-            <p class="text-sm text-blue-600 font-medium">Remaining: {{ getMaxReturn(item) }} {{ item.unit }}</p>
-          </div>
-        </div>
-        <div>
-          <label class="block text-xs font-medium text-gray-500 mb-1">Quantity to Return (Max: {{ getMaxReturn(item) }})</label>
-          <mat-form-field appearance="outline" class="w-full">
-            <input matInput type="number" [(ngModel)]="item.quantityReturned" 
-              min="0" [max]="getMaxReturn(item)" placeholder="Enter quantity">
-            <span matTextSuffix class="text-gray-400 text-sm ml-2">{{ item.unit }}</span>
-          </mat-form-field>
-        </div>
+  @for (item of returnItems; track item.transactionItemId) {
+    <div class="mb-3 p-4 border rounded-lg">
+      <div class="flex items-center gap-2 mb-2">
+        <span class="font-semibold">{{ item.goodsName }}</span>
+        <span class="bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs">Returnable</span>
       </div>
-    }
-  </div>
+      <p class="text-sm text-gray-500 mb-2">
+        Issued: {{ item.issued }} {{ item.unit }} | Returned: {{ item.returned }} | Damaged: {{ item.damaged }} | Lost: {{ item.lost }}
+      </p>
+      <p class="text-sm text-blue-600 font-medium mb-3">Remaining: {{ item.remaining }} {{ item.unit }}</p>
 
-  <!-- Actions -->
-  <div class="flex justify-end gap-3 pt-6 border-t border-gray-200 mt-6">
-    <button (click)="onCancel()" mat-button [disabled]="loading"
-      class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50">
-      Cancel
-    </button>
-    <button (click)="onSubmit()" mat-raised-button color="primary" [disabled]="loading"
-      class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 flex items-center gap-2">
-      @if (loading) { <mat-spinner diameter="18" strokeWidth="2"></mat-spinner> }
-      {{ loading ? 'Returning...' : 'Return Materials' }}
+      <div class="grid grid-cols-3 gap-2 mb-2">
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Return</mat-label>
+          <input matInput type="number" [(ngModel)]="item.quantityReturned" min="0" (ngModelChange)="onReturnChange(item)">
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Damaged</mat-label>
+          <input matInput type="number" [(ngModel)]="item.quantityDamaged" min="0" [disabled]="item.damagedDisabled" (ngModelChange)="onDamagedChange(item)">
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Lost</mat-label>
+          <input matInput type="number" [(ngModel)]="item.quantityLost" min="0" [disabled]="item.lostDisabled" (ngModelChange)="onLostChange(item)">
+        </mat-form-field>
+      </div>
+
+      @if (item.validationError) { <p class="text-red-500 text-xs mb-2">{{ item.validationError }}</p> }
+      <p class="text-xs text-gray-500 mb-2">Total: {{ (item.quantityReturned||0)+(item.quantityDamaged||0)+(item.quantityLost||0) }}/{{ item.remaining }} {{ item.unit }}</p>
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Notes</mat-label>
+        <input matInput [(ngModel)]="item.notes" placeholder="Notes about this item...">
+      </mat-form-field>
+    </div>
+  }
+
+  <div class="flex justify-end gap-3 pt-4 border-t mt-4">
+    <button (click)="onCancel()" mat-button [disabled]="loading" class="px-6 py-2 border rounded-lg">Cancel</button>
+    <button (click)="onSubmit()" mat-raised-button color="primary" [disabled]="loading" class="px-6 py-2 bg-green-600 text-white rounded-lg disabled:opacity-50">
+      {{ loading ? 'Processing...' : 'Submit Return' }}
     </button>
   </div>
 </div>
