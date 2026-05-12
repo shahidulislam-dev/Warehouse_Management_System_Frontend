@@ -42,7 +42,7 @@ export class CreateGoods implements OnInit {
     this.goodsForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]],
       quantity: ['', [Validators.required, Validators.min(0), Validators.max(999999)]],
-      size: ['', [Validators.required, Validators.min(0), Validators.max(999999)]],
+      size: ['0', [Validators.required, Validators.min(0), Validators.max(999999)]],
       categoryId: ['', [Validators.required]],
       warehouseId: ['', [Validators.required]],
       floorId: ['', [Validators.required]],

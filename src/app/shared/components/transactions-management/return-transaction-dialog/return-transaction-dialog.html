@@ -1,3 +1,4 @@
+<!-- return-transaction-dialog/return-transaction-dialog.html -->
 <div class="p-6 min-w-[90vw] md:min-w-[600px] max-h-[90vh] overflow-y-auto">
   <div class="flex items-center justify-between mb-6 pb-4 border-b">
     <h2 class="text-2xl font-bold">Return - Transaction #{{ transaction.id }}</h2>
@@ -28,27 +29,35 @@
       </p>
       <p class="text-sm text-blue-600 font-medium mb-3">Remaining: {{ item.remaining }} {{ item.unit }}</p>
 
-      <div class="grid grid-cols-3 gap-2 mb-2">
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Return</mat-label>
-          <input matInput type="number" [(ngModel)]="item.quantityReturned" min="0" (ngModelChange)="onReturnChange(item)">
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Damaged</mat-label>
-          <input matInput type="number" [(ngModel)]="item.quantityDamaged" min="0" [disabled]="item.damagedDisabled" (ngModelChange)="onDamagedChange(item)">
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Lost</mat-label>
-          <input matInput type="number" [(ngModel)]="item.quantityLost" min="0" [disabled]="item.lostDisabled" (ngModelChange)="onLostChange(item)">
-        </mat-form-field>
+      <div class="grid grid-cols-3 gap-3 mb-2">
+        <div>
+          <label class="block text-xs font-medium text-gray-500 mb-1">Return</label>
+          <mat-form-field appearance="outline" class="w-full">
+            <input matInput type="number" [(ngModel)]="item.quantityReturned" min="0" (ngModelChange)="onReturnChange(item)">
+          </mat-form-field>
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-gray-500 mb-1">Damaged</label>
+          <mat-form-field appearance="outline" class="w-full">
+            <input matInput type="number" [(ngModel)]="item.quantityDamaged" min="0" [disabled]="item.damagedDisabled" (ngModelChange)="onDamagedChange(item)">
+          </mat-form-field>
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-gray-500 mb-1">Lost</label>
+          <mat-form-field appearance="outline" class="w-full">
+            <input matInput type="number" [(ngModel)]="item.quantityLost" min="0" [disabled]="item.lostDisabled" (ngModelChange)="onLostChange(item)">
+          </mat-form-field>
+        </div>
       </div>
 
       @if (item.validationError) { <p class="text-red-500 text-xs mb-2">{{ item.validationError }}</p> }
-      <p class="text-xs text-gray-500 mb-2">Total: {{ (item.quantityReturned||0)+(item.quantityDamaged||0)+(item.quantityLost||0) }}/{{ item.remaining }} {{ item.unit }}</p>
-      <mat-form-field appearance="outline" class="w-full">
-        <mat-label>Notes</mat-label>
-        <input matInput [(ngModel)]="item.notes" placeholder="Notes about this item...">
-      </mat-form-field>
+      
+      <div>
+        <label class="block text-xs font-medium text-gray-500 mb-1">Notes</label>
+        <mat-form-field appearance="outline" class="w-full">
+          <input matInput [(ngModel)]="item.notes" placeholder="Notes about this item...">
+        </mat-form-field>
+      </div>
     </div>
   }
 

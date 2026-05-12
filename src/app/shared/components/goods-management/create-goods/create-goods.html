@@ -18,184 +18,128 @@
   <!-- Form -->
   <form [formGroup]="goodsForm" (ngSubmit)="onSubmit()" class="space-y-6">
     
-    <!-- Goods Name -->
-    <div class="space-y-2">
-      <label for="name" class="block text-sm font-medium text-gray-700">
-        Goods Name *
-      </label>
-      <mat-form-field appearance="outline" class="w-full">
-        <input 
-          matInput 
-          id="name"
-          formControlName="name"
-          placeholder="Enter goods name"
-          maxlength="100"
-          [class.error]="hasError('name', 'required') || hasError('name', 'minlength')">
-        
-        <mat-hint align="end">
-          {{ goodsForm.get('name')?.value?.length || 0 }}/100
-        </mat-hint>
-        
-        @if (hasError('name', 'required')) {
-          <mat-error>Goods name is required</mat-error>
-        }
-        @if (hasError('name', 'minlength')) {
-          <mat-error>Goods name must be at least 2 characters</mat-error>
-        }
-      </mat-form-field>
+    <!-- Row 1: Goods Name + Quantity -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="space-y-2">
+        <label for="name" class="block text-sm font-medium text-gray-700">Goods Name *</label>
+        <mat-form-field appearance="outline" class="w-full">
+          <input 
+            matInput 
+            id="name"
+            formControlName="name"
+            placeholder="Enter goods name"
+            maxlength="100"
+            [class.error]="hasError('name', 'required') || hasError('name', 'minlength')">
+          @if (hasError('name', 'required')) { <mat-error>Goods name is required</mat-error> }
+          @if (hasError('name', 'minlength')) { <mat-error>Goods name must be at least 2 characters</mat-error> }
+        </mat-form-field>
+      </div>
+
+      <div class="space-y-2">
+        <label for="quantity" class="block text-sm font-medium text-gray-700">Quantity *</label>
+        <mat-form-field appearance="outline" class="w-full">
+          <input 
+            matInput 
+            type="number"
+            id="quantity"
+            formControlName="quantity"
+            placeholder="0"
+            min="0"
+            max="999999"
+            [class.error]="hasError('quantity', 'required') || hasError('quantity', 'min')">
+          @if (hasError('quantity', 'required')) { <mat-error>Quantity is required</mat-error> }
+          @if (hasError('quantity', 'min')) { <mat-error>Quantity must be 0 or more</mat-error> }
+        </mat-form-field>
+      </div>
     </div>
 
-    <!-- Quantity Only (Unit removed) -->
-    <div class="space-y-2">
-      <label for="quantity" class="block text-sm font-medium text-gray-700">
-        Quantity *
-      </label>
-      <mat-form-field appearance="outline" class="w-full">
-        <input 
-          matInput 
-          type="number"
-          id="quantity"
-          formControlName="quantity"
-          placeholder="0"
-          min="0"
-          max="999999"
-          [class.error]="hasError('quantity', 'required') || hasError('quantity', 'min')">
-        
-        @if (hasError('quantity', 'required')) {
-          <mat-error>Quantity is required</mat-error>
-        }
-        @if (hasError('quantity', 'min')) {
-          <mat-error>Quantity must be 0 or more</mat-error>
-        }
-      </mat-form-field>
-    </div>
-<!-- Quantity Only (Unit removed) -->
-    <div class="space-y-2">
-      <label for="size" class="block text-sm font-medium text-gray-700">
-        Size *
-      </label>
-      <mat-form-field appearance="outline" class="w-full">
-        <input 
-          matInput 
-          type="number"
-          id="size"
-          formControlName="size"
-          placeholder="0"
-          min="0"
-          max="999999"
-          [class.error]="hasError('size', 'required') || hasError('size', 'min')">
+    <!-- Row 2: Size + Category -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="space-y-2">
+        <label for="size" class="block text-sm font-medium text-gray-700">Size *</label>
+        <mat-form-field appearance="outline" class="w-full">
+          <input 
+            matInput 
+            type="number"
+            id="size"
+            formControlName="size"
+            placeholder="0"
+            min="0"
+            max="999999"
+            [class.error]="hasError('size', 'min')">
+          @if (hasError('size', 'min')) { <mat-error>Size must be 0 or more</mat-error> }
+        </mat-form-field>
+      </div>
 
-        @if (hasError('size', 'required')) {
-          <mat-error>Size is required</mat-error>
-        }
-        @if (hasError('size', 'min')) {
-          <mat-error>Size must be 0 or more</mat-error>
-        }
-      </mat-form-field>
-    </div>
-    <!-- Category (now includes unit) -->
-    <div class="space-y-2">
-      <label for="categoryId" class="block text-sm font-medium text-gray-700">
-        Category *
-      </label>
-      <mat-form-field appearance="outline" class="w-full">
-        <mat-select formControlName="categoryId" id="categoryId" placeholder="Select Category">
-          <mat-option value="">Select Category</mat-option>
-          @for (category of data.categories; track category.id) {
-            <mat-option [value]="category.id">
-              {{ category.name }} ({{ category.unit }}) [{{category.sizeUnit}}]
-            </mat-option>
-          }
-        </mat-select>
-        
-        @if (hasError('categoryId', 'required')) {
-          <mat-error>Category selection is required</mat-error>
-        }
-      </mat-form-field>
-      <p class="text-sm text-gray-500 mt-1">
-        Unit will be automatically set from the selected category
-      </p>
+      <div class="space-y-2">
+        <label for="categoryId" class="block text-sm font-medium text-gray-700">Category *</label>
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-select formControlName="categoryId" id="categoryId" placeholder="Select Category">
+            <mat-option value="">Select Category</mat-option>
+            @for (category of data.categories; track category.id) {
+              <mat-option [value]="category.id">
+                {{ category.name }} ({{ category.unit }}) [{{category.sizeUnit}}]
+              </mat-option>
+            }
+          </mat-select>
+          @if (hasError('categoryId', 'required')) { <mat-error>Category selection is required</mat-error> }
+        </mat-form-field>
+      </div>
     </div>
 
-    <!-- Location Section (remains the same) -->
+    <!-- Location Section -->
     <div class="border-t border-gray-200 pt-6">
       <h3 class="text-lg font-semibold text-gray-700 mb-4">Location Details</h3>
       
-      <!-- Warehouse Selection -->
-      <div class="space-y-2 mb-4">
-        <label for="warehouseId" class="block text-sm font-medium text-gray-700">
-         Select Warehouse *
-        </label>
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-select formControlName="warehouseId" id="warehouseId" placeholder="Select Warehouse">
-            <mat-option value="">Select Warehouse</mat-option>
-            @for (warehouse of data.warehouses; track warehouse.id) {
-              <mat-option [value]="warehouse.id">
-                {{ warehouse.name }}
-              </mat-option>
-            }
-          </mat-select>
-          
-          @if (hasError('warehouseId', 'required')) {
-            <mat-error>Warehouse selection is required</mat-error>
-          }
-        </mat-form-field>
+      <!-- Row 3: Warehouse + Floor -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div class="space-y-2">
+          <label for="warehouseId" class="block text-sm font-medium text-gray-700">Select Warehouse *</label>
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-select formControlName="warehouseId" id="warehouseId" placeholder="Select Warehouse">
+              <mat-option value="">Select Warehouse</mat-option>
+              @for (warehouse of data.warehouses; track warehouse.id) {
+                <mat-option [value]="warehouse.id">{{ warehouse.name }}</mat-option>
+              }
+            </mat-select>
+            @if (hasError('warehouseId', 'required')) { <mat-error>Warehouse selection is required</mat-error> }
+          </mat-form-field>
+        </div>
+
+        <div class="space-y-2">
+          <label for="floorId" class="block text-sm font-medium text-gray-700">Select Floor *</label>
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-select formControlName="floorId" id="floorId" [disabled]="!goodsForm.get('warehouseId')?.value" placeholder="Select Floor">
+              <mat-option value="">Select Floor</mat-option>
+              @if (!goodsForm.get('warehouseId')?.value) {
+                <mat-option disabled>Please select a warehouse first</mat-option>
+              }
+              @for (floor of floors; track floor.id) {
+                <mat-option [value]="floor.id">{{ floor.name }}</mat-option>
+              }
+            </mat-select>
+            @if (hasError('floorId', 'required')) { <mat-error>Floor selection is required</mat-error> }
+          </mat-form-field>
+        </div>
       </div>
 
-      <!-- Floor Selection -->
-      <div class="space-y-2 mb-4">
-        <label for="floorId" class="block text-sm font-medium text-gray-700">
-         Select Floor *
-        </label>
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-select formControlName="floorId" id="floorId" [disabled]="!goodsForm.get('warehouseId')?.value" placeholder="Select Floor">
-            <mat-option value="">Select Floor</mat-option>
-            @if (!goodsForm.get('warehouseId')?.value) {
-              <mat-option disabled>
-                Please select a warehouse first
-              </mat-option>
-            }
-            @for (floor of floors; track floor.id) {
-              <mat-option [value]="floor.id">
-                {{ floor.name }}
-              </mat-option>
-            }
-          </mat-select>
-          
-          @if (hasError('floorId', 'required')) {
-            <mat-error>Floor selection is required</mat-error>
-          }
-        </mat-form-field>
-      </div>
-
-      <!-- Room Selection -->
+      <!-- Row 4: Room (Full width) -->
       <div class="space-y-2">
-        <label for="roomId" class="block text-sm font-medium text-gray-700">
-         Select Room *
-        </label>
+        <label for="roomId" class="block text-sm font-medium text-gray-700">Select Room *</label>
         <mat-form-field appearance="outline" class="w-full">
           <mat-select formControlName="roomId" id="roomId" [disabled]="!goodsForm.get('floorId')?.value" placeholder="Select Room">
             <mat-option value="">Select Room</mat-option>
             @if (!goodsForm.get('warehouseId')?.value) {
-              <mat-option disabled>
-                Please select a warehouse first
-              </mat-option>
+              <mat-option disabled>Please select a warehouse first</mat-option>
             }
             @if (goodsForm.get('warehouseId')?.value && !goodsForm.get('floorId')?.value) {
-              <mat-option disabled>
-                Please select a floor first
-              </mat-option>
+              <mat-option disabled>Please select a floor first</mat-option>
             }
             @for (room of rooms; track room.id) {
-              <mat-option [value]="room.id">
-                {{ room.name }}
-              </mat-option>
+              <mat-option [value]="room.id">{{ room.name }}</mat-option>
             }
           </mat-select>
-          
-          @if (hasError('roomId', 'required')) {
-            <mat-error>Room selection is required</mat-error>
-          }
+          @if (hasError('roomId', 'required')) { <mat-error>Room selection is required</mat-error> }
         </mat-form-field>
       </div>
     </div>
@@ -203,7 +147,7 @@
   </form>
 </div>
 
-<!-- Action Buttons (remains the same) -->
+<!-- Action Buttons -->
 <div class="px-6 py-4 border-t border-gray-200 bg-gray-50">
   <div class="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-3 w-full gap-3">
     <button
