@@ -23,10 +23,13 @@
       </mat-form-field>
     </div>
 
+    <!-- Date Picker with Calendar Button -->
     <div class="space-y-2">
       <label class="block text-sm font-medium text-gray-700">Event Date *</label>
       <mat-form-field appearance="outline" class="w-full">
-        <input matInput type="datetime-local" formControlName="eventDate">
+        <input matInput [matDatepicker]="picker" formControlName="eventDate" placeholder="Choose a date" readonly>
+        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
         @if (hasError('eventDate', 'required')) {
           <mat-error>Event date is required</mat-error>
         }

@@ -94,15 +94,15 @@
       <!-- Row 3: Warehouse + Floor -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <div class="space-y-2">
-          <label for="warehouseId" class="block text-sm font-medium text-gray-700">Select Warehouse *</label>
+          <label for="warehouseId" class="block text-sm font-medium text-gray-700">Select Inventory *</label>
           <mat-form-field appearance="outline" class="w-full">
-            <mat-select formControlName="warehouseId" id="warehouseId" placeholder="Select Warehouse">
-              <mat-option value="">Select Warehouse</mat-option>
+            <mat-select formControlName="warehouseId" id="warehouseId" placeholder="Select Inventory">
+              <mat-option value="">Select Inventory</mat-option>
               @for (warehouse of data.warehouses; track warehouse.id) {
                 <mat-option [value]="warehouse.id">{{ warehouse.name }}</mat-option>
               }
             </mat-select>
-            @if (hasError('warehouseId', 'required')) { <mat-error>Warehouse selection is required</mat-error> }
+            @if (hasError('warehouseId', 'required')) { <mat-error>Inventory selection is required</mat-error> }
           </mat-form-field>
         </div>
 

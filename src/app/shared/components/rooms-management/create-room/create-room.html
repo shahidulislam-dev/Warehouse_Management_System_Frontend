@@ -19,10 +19,10 @@
     <!-- Warehouse Selection -->
     <div class="space-y-2">
       <label class="block text-sm font-medium text-gray-700">
-       Select Warehouse *
+       Select Inventory *
       </label>
       <mat-form-field appearance="outline" class="w-full">
-        <mat-select formControlName="warehouseId" (selectionChange)="onWarehouseChange($event.value)" placeholder="Select Warehouse">
+        <mat-select formControlName="warehouseId" (selectionChange)="onWarehouseChange($event.value)" placeholder="Select Inventory">
           @for (warehouse of warehouses; track warehouse.id) {
             <mat-option [value]="warehouse.id">
               {{ warehouse.name }}

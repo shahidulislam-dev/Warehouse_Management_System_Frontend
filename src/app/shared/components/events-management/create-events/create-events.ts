@@ -3,6 +3,7 @@ import { EventsResponse, EventsService } from '../../../../services/events-servi
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { GlobalToastrService } from '../../../../services/global-toastr-service';
+
 export interface CreateEventData {
   event?: EventsResponse;
 }
@@ -14,7 +15,7 @@ export interface CreateEventData {
   styleUrl: './create-events.css'
 })
 export class CreateEvents {
-eventForm: FormGroup;
+  eventForm: FormGroup;
   isEdit = false;
   loading = false;
 
@@ -29,17 +30,29 @@ eventForm: FormGroup;
     
     this.eventForm = this.fb.group({
       eventName: ['', [Validators.required, Validators.minLength(2)]],
-      eventDate: ['', [Validators.required]],
+      eventDate: [null, [Validators.required]], 
       active: [true]
     });
 
     if (this.isEdit && data.event) {
       this.eventForm.patchValue({
         eventName: data.event.eventName,
-        eventDate: data.event.eventDate,
+        eventDate: data.event.eventDate ? new Date(data.event.eventDate) : null,
         active: data.event.active
       });
     }
+  }
+
+  /**
+   * Format Date object to yyyy-MM-dd string for backend
+   */
+  formatDate(date: Date): string {
+    if (!date) return '';
+    const d = new Date(date);
+    const month = '' + (d.getMonth() + 1);
+    const day = '' + d.getDate();
+    const year = d.getFullYear();
+    return [year, month.padStart(2, '0'), day.padStart(2, '0')].join('-');
   }
 
   onSubmit(): void {
@@ -49,7 +62,7 @@ eventForm: FormGroup;
       
       const request = {
         eventName: formValue.eventName.trim(),
-        eventDate: formValue.eventDate,
+        eventDate: this.formatDate(formValue.eventDate),  // ✅ Format Date to string
         active: formValue.active
       };
 

@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { AuthService } from '../auth/services/auth-service';
 import { environment } from '../../environment/environment';
 
+// services/events-service.ts
 export interface EventsResponse {
   id: number;
   eventName: string;
@@ -15,7 +16,7 @@ export interface EventsResponse {
 
 export interface EventsRequest {
   eventName: string;
-  eventDate: string;
+  eventDate: string;  
   active: boolean;
 }
 

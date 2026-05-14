@@ -3,7 +3,7 @@
   <!-- Header -->
   <div class="flex items-center justify-between mb-6">
     <h2 class="text-xl font-bold text-gray-800">
-      {{ isEdit ? 'Edit Warehouse' : 'Add New Warehouse' }}
+      {{ isEdit ? 'Edit Inventory' : 'Add New Inventory' }}
     </h2>
     <button 
       mat-icon-button 
@@ -16,17 +16,17 @@
 
   <!-- Form -->
   <form [formGroup]="warehouseForm" (ngSubmit)="onSubmit()" class="space-y-6">
-    <!-- Warehouse Name Field -->
+    <!-- Inventory Name Field -->
     <div class="space-y-2">
       <label for="name" class="block text-sm font-medium text-gray-700">
-        Warehouse Name *
+        Inventory Name *
       </label>
       <mat-form-field appearance="outline" class="w-full">
         <input 
           matInput 
           id="name"
           formControlName="name"
-          placeholder="Enter warehouse name"
+          placeholder="Enter inventory name"
           maxlength="100">
         <mat-icon matSuffix class="text-gray-400">business</mat-icon>
         
@@ -34,15 +34,15 @@
           {{ warehouseForm.get('name')?.value?.length || 0 }}/100
         </mat-hint>
         
-        <mat-error *ngIf="warehouseForm.get('name')?.hasError('required')">
-          Warehouse name is required
-        </mat-error>
-        <mat-error *ngIf="warehouseForm.get('name')?.hasError('minlength')">
-          Warehouse name must be at least 2 characters
-        </mat-error>
-        <mat-error *ngIf="warehouseForm.get('name')?.hasError('maxlength')">
-          Warehouse name cannot exceed 100 characters
-        </mat-error>
+        @if (warehouseForm.get('name')?.hasError('required')) {
+          <mat-error>Inventory name is required</mat-error>
+        }
+        @if (warehouseForm.get('name')?.hasError('minlength')) {
+          <mat-error>Inventory name must be at least 2 characters</mat-error>
+        }
+        @if (warehouseForm.get('name')?.hasError('maxlength')) {
+          <mat-error>Inventory name cannot exceed 100 characters</mat-error>
+        }
       </mat-form-field>
     </div>
   </form>
@@ -67,8 +67,10 @@
       color="primary"
       class="w-full sm:w-auto px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
       (click)="onSubmit()">
-      <mat-spinner diameter="20" *ngIf="loading"></mat-spinner>
-      <span>{{ loading ? 'Saving...' : (isEdit ? 'Update' : 'Create') }} Warehouse</span>
+      @if (loading) {
+        <mat-spinner diameter="20"></mat-spinner>
+      }
+      <span>{{ loading ? 'Saving...' : (isEdit ? 'Update' : 'Create') }} Inventory</span>
     </button>
   </div>
 </mat-dialog-actions>
